@@ -23,16 +23,17 @@ if __name__ == '__main__':
     seed = 1234
     initial_condition = [0.0, 0.0]
     alpha = 10
-    unnorm_logdensity, unnorm_logdensity_grad = test_example(10, beta=0.25)
-    step_size = 0.1
-    n_samples = 10000
+    unnorm_logdensity, unnorm_logdensity_grad = test_example(100, beta=0.25)
+    step_size = [1.0,1.0]
+    mass = [1.,1.]
+    n_samples = 1000
 
     random_walk_mcmc = RandomWalkMCMC(seed, initial_condition, unnorm_logdensity, step_size)
     random_walk_samples = random_walk_mcmc.sample(n_chains=3, n_samples=n_samples)
     
     dt = 0.1
     t = .5
-    hamiltonian_mcmc = HamiltonianMCMC(seed, initial_condition, unnorm_logdensity, unnorm_logdensity_grad, step_size, t, dt)
+    hamiltonian_mcmc = HamiltonianMCMC(seed, initial_condition, unnorm_logdensity, unnorm_logdensity_grad, mass, t, dt)
     hamiltonian_samples = hamiltonian_mcmc.sample(n_chains=3, n_samples=n_samples)
 
 
@@ -48,7 +49,6 @@ if __name__ == '__main__':
     def plot_2d_kde( samples, title ):
         '''
         Plots the 2D KDE for a given array of shape (n_chains, n_samples, 2).
-        
         Parameters:
         samples (np.ndarray): An array of shape (n_chains, n_samples, 2).
         '''
@@ -75,5 +75,10 @@ if __name__ == '__main__':
     plot_2d_kde(hamiltonian_samples, 'hamiltonian')
     plt.show()
 
-
+# Things to explore
+# - asymmetric masses 
+# - small vs big masses (dt probably needs to be adjusted)
+# - long integration time (rejection increase vs correlation decrease)
+# - dt size (precision vs speed)
+# - 
 

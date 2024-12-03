@@ -74,13 +74,17 @@ class RandomWalkMCMC(MCMCSampler):
     '''
     def __init__(self, seed, initial_condition, unnorm_logdensity, step_size):
         super().__init__(seed, initial_condition, unnorm_logdensity)
-        self.step_size = step_size
+        try:
+            iterator = iter(step_size)
+            self.step_size = np.array(step_size)
+        except TypeError:
+            self.step_size = step_size
     
     def proposal_step(self, current_state):
         '''
         Proposes a new state using a random walk.
         '''
-        proposed_state = current_state + self.rng.normal(0, self.step_size, size=current_state.shape)
+        proposed_state = current_state + self.step_size * self.rng.normal(0, 1, size=current_state.shape)
         current_logdensity = self.unnorm_logdensity(current_state)
         proposed_logdensity = self.unnorm_logdensity(proposed_state)
 
@@ -90,9 +94,13 @@ class HamiltonianMCMC(MCMCSampler):
     '''
     Hamiltonian (or Hybrid) Monte Carlo sampler.
     '''
-    def __init__(self, seed, initial_condition, unnorm_logdensity, unnorm_logdensity_grad, step_size, leapfrog_time, dt):
+    def __init__(self, seed, initial_condition, unnorm_logdensity, unnorm_logdensity_grad, mass, leapfrog_time, dt):
         super().__init__(seed, initial_condition, unnorm_logdensity)
-        self.step_size = step_size
+        try:
+            iterator = iter(mass)
+            self.mass = np.array(mass)
+        except TypeError:
+            self.mass = mass
         self.dt = dt
         self.num_leapfrog_steps = int(leapfrog_time / dt)
         self.unnorm_logdensity_grad = unnorm_logdensity_grad
@@ -101,11 +109,10 @@ class HamiltonianMCMC(MCMCSampler):
         '''
         Proposes a new state using Hamiltonian dynamics.
         '''
-        momentum = self.rng.normal(0, 1, size=current_state.shape)
+        momentum = self.mass * self.rng.normal(0, 1, size=current_state.shape)
         proposed_state = current_state.copy()
         proposed_momentum = momentum.copy()
         
-        # Leapfrog integration
         for _ in range(self.num_leapfrog_steps):
             proposed_momentum += 0.5 * self.dt * self.unnorm_logdensity_grad(proposed_state)
             proposed_state += self.dt * proposed_momentum
