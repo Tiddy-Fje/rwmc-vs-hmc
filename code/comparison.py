@@ -1,6 +1,6 @@
 import yaml
 import argparse
-from main import test_example, plot_2d_kde
+from utils import test_example, plot_2d_kde
 from sampler import RandomWalkMCMC, HamiltonianMCMC
 from matplotlib import pyplot as plt
 
@@ -21,14 +21,12 @@ def main(config_file):
     with open(config_file, 'r') as file:
         config = yaml.safe_load(file) 
     
-    unnorm_logdensity, unnorm_logdensity_grad = test_example(100, beta=0.25)
+    unnorm_logdensity, unnorm_logdensity_grad = test_example(100, plot=True)
     case1_samples = sample_from_info( config['Case1'], config['General'], unnorm_logdensity, unnorm_logdensity_grad )
     case2_samples = sample_from_info( config['Case2'], config['General'], unnorm_logdensity, unnorm_logdensity_grad )
     
-    plot_2d_kde(case1_samples, config['Case1']['sampler_type'])
-    plot_2d_kde(case2_samples, config['Case2']['sampler_type'])
-    plt.show()
-
+    plot_2d_kde( case1_samples, case2_samples, config['Case1']['sampler_type'], \
+                config['Case2']['sampler_type'], config['General']['fig_name'] )
     return
 
 if __name__ == '__main__':
@@ -39,3 +37,5 @@ if __name__ == '__main__':
     
     args = parser.parse_args()
     main(args.config_file) # args.config_file is a filename 
+    #plt.show()
+

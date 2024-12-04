@@ -1,6 +1,3 @@
-Files :
-  runs_dir : ../runs
-
 Case1 : 
   sampler_type : HMC
   mass : [1.,1.]
@@ -17,3 +14,4 @@ General :
   burn_in : 100
   n_chains : 3
   n_samples : 1000
+  fig_name : rwmc_vs_hmc

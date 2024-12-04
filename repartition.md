@@ -15,3 +15,11 @@
   * Tara does (c) and starts (hopefully) finish the (d preums)
 * 15:30-17:00 lab meeting on Thur (maybe can meet before/after lunch), otherwise free on Fri (not available 13th)
 * dimanche best (keep if free for it) -> 10:00 - ~16:30 
+
+
+// Things to explore
+// - asymmetric masses 
+// - small vs big masses (dt probably needs to be adjusted)
+// - long integration time (rejection increase vs correlation decrease)
+// - dt size (precision vs speed)
+// - 
