@@ -1,0 +1,21 @@
+Files :
+  runs_dir : ../runs
+
+Case1 : 
+  sampler_type : HMC
+  mass : [1.,1.]
+  t : 0.5
+  dt : 0.1
+
+Case2 : 
+  sampler_type : HMC
+  mass : [1.,1.]
+  t : 1.
+  dt : 0.1
+
+General :
+  seed : 1234
+  initial_condition : [0.,0.]
+  burn_in : 100
+  n_chains : 3
+  n_samples : 1000

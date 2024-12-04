@@ -18,11 +18,35 @@ def simple_test():
     unnorm_logdensity_grad = lambda x: -x
     return unnorm_logdensity, unnorm_logdensity_grad
 
+def plot_2d_kde( samples, title ):
+    '''
+    Plots the 2D KDE for a given array of shape (n_chains, n_samples, 2).
+    Parameters:
+    samples (np.ndarray): An array of shape (n_chains, n_samples, 2).
+    '''
+    n_chains, n_samples, _ = samples.shape
+    plt.figure(figsize=(8, 6))
+    
+    #for chain_idx in range(n_chains):
+    #chain_samples = samples[chain_idx]
+    sns.kdeplot(
+        x=samples[0,:, 0], 
+        y=samples[0,:, 1], 
+        fill=True, 
+        alpha=0.4, 
+        #label=f'Chain {chain_idx + 1}'
+    )
+    
+    plt.title(title)
+    plt.xlabel('x')
+    plt.ylabel('y')
+    #plt.legend()
+    plt.grid()
+
 
 if __name__ == '__main__':
     seed = 1234
     initial_condition = [0.0, 0.0]
-    alpha = 10
     unnorm_logdensity, unnorm_logdensity_grad = test_example(100, beta=0.25)
     step_size = [1.0,1.0]
     mass = [1.,1.]
@@ -46,30 +70,6 @@ if __name__ == '__main__':
     ax.contourf(X, Y, Z, levels=100)
 
 
-    def plot_2d_kde( samples, title ):
-        '''
-        Plots the 2D KDE for a given array of shape (n_chains, n_samples, 2).
-        Parameters:
-        samples (np.ndarray): An array of shape (n_chains, n_samples, 2).
-        '''
-        n_chains, n_samples, _ = samples.shape
-        plt.figure(figsize=(8, 6))
-        
-        #for chain_idx in range(n_chains):
-        #chain_samples = samples[chain_idx]
-        sns.kdeplot(
-            x=samples[0,:, 0], 
-            y=samples[0,:, 1], 
-            fill=True, 
-            alpha=0.4, 
-            #label=f'Chain {chain_idx + 1}'
-        )
-        
-        plt.title(title)
-        plt.xlabel('x')
-        plt.ylabel('y')
-        #plt.legend()
-        plt.grid()
 
     plot_2d_kde(random_walk_samples, 'random_walk')
     plot_2d_kde(hamiltonian_samples, 'hamiltonian')
