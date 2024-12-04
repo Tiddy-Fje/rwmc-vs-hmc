@@ -25,8 +25,8 @@ def main(config_file):
     case1_samples = sample_from_info( config['Case1'], config['General'], unnorm_logdensity, unnorm_logdensity_grad )
     case2_samples = sample_from_info( config['Case2'], config['General'], unnorm_logdensity, unnorm_logdensity_grad )
     
-    plot_2d_kde( case1_samples, case2_samples, config['Case1']['sampler_type'], \
-                config['Case2']['sampler_type'], config['General']['fig_name'] )
+    plot_2d_kde( case1_samples, case2_samples, config['Case1']['title'], \
+                config['Case2']['title'], config['General']['fig_name'] )
     return
 
 if __name__ == '__main__':

@@ -1,16 +1,15 @@
-Files :
-  runs_dir : ../runs
-
 Case1 : 
   sampler_type : HMC
+  title : Long t
   mass : [1.,1.]
-  t : 0.5
+  t : 1.
   dt : 0.1
 
 Case2 : 
   sampler_type : HMC
+  title : Right t
   mass : [1.,1.]
-  t : 1.
+  t : 0.5
   dt : 0.1
 
 General :
@@ -19,3 +18,4 @@ General :
   burn_in : 100
   n_chains : 3
   n_samples : 1000
+  fig_name : t_size

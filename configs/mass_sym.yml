@@ -1,15 +1,16 @@
-Files :
-  runs_dir : ../runs
-
 Case1 : 
   sampler_type : HMC
-  mass : [1.,1.]
+  title : Asymmetric mass
+  mass : [1.5,.5]
   t : 0.5
   dt : 0.1
 
 Case2 : 
-  sampler_type : RWMC
-  step_size : [1.,1.]
+  sampler_type : HMC
+  title : Symmetric mass
+  mass : [1.,1.]
+  t : 0.5
+  dt : 0.1
 
 General :
   seed : 1234
@@ -17,3 +18,4 @@ General :
   burn_in : 100
   n_chains : 3
   n_samples : 1000
+  fig_name : mass_sym
