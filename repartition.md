@@ -17,14 +17,29 @@
 * dimanche best (keep if free for it) -> 10:00 - ~16:30 
 
 
-// Things to explore
+## Meeting of the 6th 
+* goals ??
+  * updates on how it is going
+    * help needed ?
+    * ...
+  * quick explanation of code/workflow ??
+  * ...
+  * setting next steps 
+* ...
+* next steps
+  * Aude
+    * 
+  * Tara
+    *  
+
+## Things to explore
 - asymmetric masses (we loose symmetry alignment with problem??)
 - small vs big masses 
   - too small will hurt exploration (as won't move far from IC), and therefore increase correlation
   - too large will need lower dt to avoid numerical errors (so computation time increase or acceptance deteriorates)
 - long integration time 
   - long will increase errors (and so rejection-rate) at fixed dt
-    - this coupling with dt often reason for using number of integration steps instead ?
+    - this coupling with dt often reason for using number of integration steps instead ? (should plot as func of dt)
   - long will decrease correlation  
 - dt size 
   - too low will take longer computation time

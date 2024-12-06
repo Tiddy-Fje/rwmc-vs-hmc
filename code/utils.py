@@ -23,11 +23,6 @@ def test_example( alpha, beta=0.25, plot=False ):
     
     return unnorm_logdensity, unnorm_logdensity_grad
 
-def simple_test():
-    unnorm_logdensity = lambda x: -0.5 * (x[0]**2 + x[1]**2)
-    unnorm_logdensity_grad = lambda x: -x
-    return unnorm_logdensity, unnorm_logdensity_grad
-
 def plot_2d_kde( samples1, samples2, title1, title2, figname ):
     '''
     Plots the 2D KDE for a given array of shape (n_chains, n_samples, 2).
