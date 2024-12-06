@@ -28,9 +28,13 @@
 * ...
 * next steps
   * Aude
-    * 
+    * code measures for the (d)
+    * start looking into (e)
+    * start looking into analysis with ESS etc. for the (d) (lower priority)
   * Tara
-    *  
+    * start looking into (f)
+    * think about insightful plots for the (d) (lower priority)
+  * remark : could do analysis together on Sunday !
 
 ## Things to explore
 - asymmetric masses (we loose symmetry alignment with problem??)

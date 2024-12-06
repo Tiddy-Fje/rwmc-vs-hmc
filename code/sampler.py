@@ -122,7 +122,6 @@ class HamiltonianMCMC(MCMCSampler):
             #print(proposed_momentum, proposed_state)
             #time.sleep(1)
 
-        
         current_energy = -self.unnorm_logdensity(current_state) + np.dot(momentum,momentum) / 2
         proposed_energy = -self.unnorm_logdensity(proposed_state) + np.dot(proposed_momentum,proposed_momentum) / 2
         
