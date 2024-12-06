@@ -2,6 +2,7 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 
+
 def test_example( alpha, beta=0.25, plot=False ):
     '''
     Test function for the unnormalized density.

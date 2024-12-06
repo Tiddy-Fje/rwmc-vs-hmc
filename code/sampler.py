@@ -5,12 +5,13 @@ class MCMCSampler(ABC):
     '''
     Abstract base class for MCMC Samplers.
     '''
-    def __init__(self, seed, initial_condition, unnorm_logdensity):
+    def __init__(self, seed, initial_condition, unnorm_logdensity, burn_in):
         self.seed = seed
         self.initial_condition = np.array(initial_condition)
         self.unnorm_logdensity = unnorm_logdensity
         # we use log densities here to avoid underflow
-
+        
+        self.burn_in = burn_in
         self.rng = np.random.default_rng(seed)
         self.state = self.initial_condition.copy()
     
@@ -42,6 +43,7 @@ class MCMCSampler(ABC):
         Returns:
         np.ndarray: Samples of shape (n_chains, n_samples, dim).
         '''
+        assert self.burn_in < n_samples, 'Burn-in period must be less than number of samples.'
         dim = len(self.initial_condition)
         samples = np.zeros((n_chains, n_samples, dim))
         acceptance_rate = 0
@@ -58,7 +60,7 @@ class MCMCSampler(ABC):
         
         acceptance_rate /= (n_chains * n_samples)
         print(f'Acceptance Rate: {acceptance_rate:.2f}')
-        return samples
+        return samples[:, self.burn_in:, :]
     
     @abstractmethod
     def proposal_step(self, current_state):
@@ -72,8 +74,8 @@ class RandomWalkMCMC(MCMCSampler):
     '''
     Random Walk MCMC sampler.
     '''
-    def __init__(self, seed, initial_condition, unnorm_logdensity, step_size):
-        super().__init__(seed, initial_condition, unnorm_logdensity)
+    def __init__(self, seed, initial_condition, unnorm_logdensity, burn_in, step_size):
+        super().__init__(seed, initial_condition, unnorm_logdensity, burn_in)
         try:
             iterator = iter(step_size)
             self.step_size = np.array(step_size)
@@ -94,8 +96,8 @@ class HamiltonianMCMC(MCMCSampler):
     '''
     Hamiltonian (or Hybrid) Monte Carlo sampler.
     '''
-    def __init__(self, seed, initial_condition, unnorm_logdensity, unnorm_logdensity_grad, mass, leapfrog_time, dt):
-        super().__init__(seed, initial_condition, unnorm_logdensity)
+    def __init__(self, seed, initial_condition, unnorm_logdensity, burn_in, unnorm_logdensity_grad, mass, leapfrog_time, dt):
+        super().__init__(seed, initial_condition, unnorm_logdensity, burn_in)
         try:
             iterator = iter(mass)
             self.mass = np.array(mass)
@@ -117,6 +119,9 @@ class HamiltonianMCMC(MCMCSampler):
             proposed_momentum += 0.5 * self.dt * self.unnorm_logdensity_grad(proposed_state)
             proposed_state += self.dt * proposed_momentum
             proposed_momentum += 0.5 * self.dt * self.unnorm_logdensity_grad(proposed_state)
+            #print(proposed_momentum, proposed_state)
+            #time.sleep(1)
+
         
         current_energy = -self.unnorm_logdensity(current_state) + np.dot(momentum,momentum) / 2
         proposed_energy = -self.unnorm_logdensity(proposed_state) + np.dot(proposed_momentum,proposed_momentum) / 2
