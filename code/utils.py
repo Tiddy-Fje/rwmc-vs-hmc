@@ -1,6 +1,7 @@
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
+from statsmodels.tsa.stattools import acf
 
 
 def test_example( alpha, beta=0.25, plot=False ):
@@ -57,3 +58,49 @@ def plot_2d_kde( samples1, samples2, title1, title2, figname ):
 if __name__ == '__main__':
     print('Testing stuff ...')
 
+def plot_eff_sample_size(samples1, samples2, label1, label2, dt, t):
+    def plot_RWMC(samples, label):
+        acf_q1 = np.array([acf(samples[i,:,0], nlags=len(samples[0])) for i in range(len(samples))]).mean(axis=0)
+        acf_q2 = np.array([acf(samples[i,:,1], nlags=len(samples[0])) for i in range(len(samples))]).mean(axis=0)
+        ns = [int(n) for n in np.linspace(len(acf_q1)/50, len(acf_q1)/5, 20)]
+        eff_q1 = [n/(1+2*sum(acf_q1[1:n])) for n in ns]
+        eff_q2 = [n/(1+2*sum(acf_q2[1:n])) for n in ns]
+
+        plt.plot(ns, eff_q1, label=label1+' - q1')
+        plt.plot(ns, eff_q2, label=label1+' - q2')
+    def plot_HMC(samples, label, dt, t):
+        acf_q1 = np.array([acf(samples[i,:,0], nlags=len(samples[0])) for i in range(len(samples))]).mean(axis=0)
+        acf_q2 = np.array([acf(samples[i,:,1], nlags=len(samples[0])) for i in range(len(samples))]).mean(axis=0)
+        ns = [int(n) for n in np.linspace(len(acf_q1)/500, len(acf_q1)/50, 20)]
+        eff_q1 = [n/(1+2*sum(acf_q1[1:n])) for n in ns]
+        eff_q2 = [n/(1+2*sum(acf_q2[1:n])) for n in ns]
+        ns = [n*(1+2*t/dt) for n in ns]
+        plt.plot(ns, eff_q1, label=label2+' - q1')
+        plt.plot(ns, eff_q2, label=label2+' - q2')
+    
+    if label1 == 'RWMC': plot_RWMC(samples1, label1)
+    else: plot_HMC(samples1, label1, dt, t)
+    if label2 == 'RWMC': plot_RWMC(samples2, label2)
+    else: plot_HMC(samples2, label2, dt, t)
+    plt.legend()
+    plt.xlabel('Effective sample size')
+    plt.ylabel('Number of evaluations')
+    plt.grid()
+    plt.savefig( f'../figures/effective_sample_size.png' )
+    plt.show()
+
+def plot_acf(samples1, samples2, label1, label2):
+    for i in range(2):
+        samples = samples1 if i == 0 else samples2
+        label = label1 if i == 0 else label2
+        acf_q1 = np.array([acf(samples[i,:,0], nlags=len(samples[0])) for i in range(len(samples))]).mean(axis=0)
+        acf_q2 = np.array([acf(samples[i,:,1], nlags=len(samples[0])) for i in range(len(samples))]).mean(axis=0)
+
+        plt.plot(acf_q1[:200], label=label+' - q1')
+        plt.plot(acf_q2[:200], label=label+' - q2')
+    plt.legend()
+    plt.xlabel('Lag')
+    plt.ylabel('ACF')
+    plt.grid()
+    plt.savefig( f'../figures/acf.png' )
+    plt.show()
