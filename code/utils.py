@@ -43,12 +43,19 @@ def preprocess_data():
     df['first physician visit'] = df['ftv'].apply(lambda x: 1 if x > 0 else 0)
     df['more physician visits'] = df['ftv'].apply(lambda x: 1 if x > 1 else 0)
 
-    df = df[['low', 'age', 'weight', 'african/american', 'other race', 'smoke', 'premature birth',
-                'hypertension', 'uterine irritability', 'first physician visit', 'more physician visits']]
+    keys = ['low', 'age', 'weight', 'african/american', 'other race', 'smoke', 'premature birth',
+                'hypertension', 'uterine irritability', 'first physician visit', 'more physician visits']    
+    df = df[keys]
+
+    log_odds_dic = {key: 1. for key in keys}
+    log_odds_dic['premature birth'] = 5.
+    log_odds_dic['weight'] = 5.
+    log_odds = [log_odds_dic[key] for key in keys]
+    sigmas = np.log( np.array(log_odds) )
     
     X = np.array(df.drop(columns = ['low']))
     y = np.array(df['low'])
-    return X, y
+    return X, y, sigmas
 
 def logposterior(X, y, q, sigma):
     temp = X.T @ (y - 1)
