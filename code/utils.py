@@ -53,7 +53,9 @@ def preprocess_data():
 def logposterior(X, y, q, sigma):
     temp = X.T @ (y - 1)
     def logdensity( q ):
-        return q.T @ temp - np.sum(np.log(1 + np.exp(X @ q))) - 0.5 * np.sum(q**2/sigma**2)
+        return q.T @ temp - np.sum(np.log(1 + np.exp(- X @ q))) - 0.5 * np.sum(q**2/sigma**2)
+    def logdensity_grad( q ):
+        return temp + X.T @ (1/(1 + np.exp(X @ q))) - q/sigma**2
     return logdensity
 
 def plot_2d_kde( samples1, samples2, title1, title2, figname ):
