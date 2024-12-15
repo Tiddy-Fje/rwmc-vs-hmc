@@ -2,6 +2,7 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 from statsmodels.tsa.stattools import acf
+import pandas as pd
 
 
 def test_example( alpha, beta=0.25, plot=False ):
@@ -23,6 +24,37 @@ def test_example( alpha, beta=0.25, plot=False ):
         plt.savefig(f'../figures/density_alpha={alpha}.png')
     
     return unnorm_logdensity, unnorm_logdensity_grad
+
+def preprocess_data():
+    '''
+    Preprocesses the birthwt dataset:
+    - Standardizes the age and weight columns.
+    - Transform race and physician visit columns into binary columns.
+    '''
+    df = pd.read_csv('data/birthwt.csv')
+    
+    df = df.rename(columns={'ptl': 'premature birth', 'ht': 'hypertension', 'ui': 'uterine irritability'})
+
+    df['age'] = (df['age'] - df['age'].mean())/df['age'].std()
+    df['weight'] = (df['lwt'] - df['lwt'].mean())/df['lwt'].std()
+
+    df['african/american'] = df['race'].apply(lambda x: 1 if x == 2 else 0)
+    df['other race'] = df['race'].apply(lambda x: 1 if x == 3 else 0)
+    df['first physician visit'] = df['ftv'].apply(lambda x: 1 if x > 0 else 0)
+    df['more physician visits'] = df['ftv'].apply(lambda x: 1 if x > 1 else 0)
+
+    df = df[['low', 'age', 'weight', 'african/american', 'other race', 'smoke', 'premature birth',
+                'hypertension', 'uterine irritability', 'first physician visit', 'more physician visits']]
+    
+    X = np.array(df.drop(columns = ['low']))
+    y = np.array(df['low'])
+    return X, y
+
+def logposterior(X, y, q, sigma):
+    temp = X.T @ (y - 1)
+    def logdensity( q ):
+        return q.T @ temp - np.sum(np.log(1 + np.exp(X @ q))) - 0.5 * np.sum(q**2/sigma**2)
+    return logdensity
 
 def plot_2d_kde( samples1, samples2, title1, title2, figname ):
     '''
