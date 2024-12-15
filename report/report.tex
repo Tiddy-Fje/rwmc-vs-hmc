@@ -54,6 +54,41 @@
 
 		If the dynamics is discretised with the Velocity Verlet algorithm, the volume in phase space is preserved up to a small error, which is why the algorithm is used in practice [cite wikipedia]. 
         \subsection{What happens for discrete evolution ?}
+	\section{(f)}
+	As an alternative to HMC we consider rejection sampling. We therefore want to find a function $g(q)$ and a constant $C$ such that the following inequality holds for all $q$:
+	\begin{equation}
+		\tilde{f}(q) = e^{q^TX^T(y-1_{n})}e^{-1_{n}^T \log[1+\exp(-x_i^Tq)]_{n\times 1}}e^{-\frac{1}{2}q^T\Sigma^{-1} q} \leq Cg(q),
+	\end{equation}
+	where we have denoted $\Sigma=\text{Diag}(\sigma_1^2,...,\sigma_p^2)$.
+	Given that 
+	\begin{equation}
+		e^{-\sum_i \log[1+\exp{-x_i^Tq}]} = \prod_i \frac{1}{1+\exp(-x_i^Tq)}<1,
+	\end{equation}
+	we can simplify the problem to finding a function $g(q)$ such that
+	\begin{equation}
+		\tilde{f}(q) \le e^{q^Tb}e^{-\frac{1}{2}q^T\Sigma^{-1} q} =: Cg(q),
+	\end{equation}
+	with $b=X^T(y-1_{n})$. 
+
+	By completing the square in the exponent of $Cg(q)$, we can write it in terms of a Multivariate Gaussian distribution with mean $\mu=\Sigma b$ and covariance $\Sigma$. Indeed : 
+	% TO DO : change into a double equality going from Cg(q) to clean expression in terms of completed square
+	\begin{gather}
+		%e^{q^Tb}e^{-\frac{1}{2}q^T\Sigma^{-1} q} = 
+		e^{-\frac{1}{2}(q-\mu)^T\Sigma^{-1} (q-\mu)} =
+		e^{-\frac{1}{2}\mu^T\Sigma^{-1}\mu}
+		e^{q^T\Sigma^{-1}\mu}
+		e^{-\frac{1}{2}q^T\Sigma^{-1} q} \\
+		\implies \tilde{f}(q) \le e^{\frac{1}{2}\mu^T\Sigma^{-1} \mu}e^{-\frac{1}{2}(q-\mu)^T\Sigma^{-1}(q-\mu)}.
+	\end{gather}
+	Using now the normalisation constant of the Multivariate Gaussian distribution 
+	\begin{gather}
+		\sqrt{(2\pi)^p|\Sigma|}=\int_{\mathbb{R}^p}e^{-\frac{1}{2}(q-\mu)^T\Sigma^{-1}(q-\mu)}\ dq,
+	\end{gather} 
+	we can define $g$ and $C$ as 
+	\begin{gather}
+		g(q)=\frac{1}{\sqrt{(2\pi)^p|\Sigma|}}e^{-\frac{1}{2}(q-\mu)^T\Sigma^{-1}(q-\mu)}, \\
+		C = e^{\frac{1}{2}\mu^T\Sigma^{-1} \mu}{\sqrt{(2\pi)^p|\Sigma|}} = \sqrt{(2\pi)^p|\Sigma|e^{\mu^T\Sigma^{-1} \mu}}.
+	\end{gather} 
 	\section{Section ...}
 	\section{Conclusion}
 	\section*{Aknowledgements}
