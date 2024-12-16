@@ -62,13 +62,17 @@
 	where we have denoted $\Sigma=\text{Diag}(\sigma_1^2,...,\sigma_p^2)$.
 	Given that 
 	\begin{equation}
-		e^{-\sum_i \log[1+\exp{-x_i^Tq}]} = \prod_i \frac{1}{1+\exp(-x_i^Tq)}<1,
+		\log[1+\exp(-x_i^Tq)] \le \log(2) - x_i^Tq,
+	\end{equation}
+	\begin{equation}
+		e^{-\sum_i \log[1+\exp(-x_i^Tq)]} = \prod_i \frac{1}{1+\exp(-x_i^Tq)}<1,
 	\end{equation}
 	we can simplify the problem to finding a function $g(q)$ such that
 	\begin{equation}
-		\tilde{f}(q) \le e^{q^Tb}e^{-\frac{1}{2}q^T\Sigma^{-1} q} =: Cg(q),
+		\tilde{f}(q) \le 2^{-n}e^{-q^TX^T 1_n} e^{q^TX^T(y-1_{n})}e^{-\frac{1}{2}q^T\Sigma^{-1} q} = 2^{-n}e^{q^Tb}e^{-\frac{1}{2}q^T\Sigma^{-1} q}
+		=: Cg(q),
 	\end{equation}
-	with $b=X^T(y-1_{n})$. 
+	with $b=X^T(y-2_{n})$. 
 
 	By completing the square in the exponent of $Cg(q)$, we can write it in terms of a Multivariate Gaussian distribution with mean $\mu=\Sigma b$ and covariance $\Sigma$. Indeed : 
 	% TO DO : change into a double equality going from Cg(q) to clean expression in terms of completed square
@@ -78,7 +82,7 @@
 		e^{-\frac{1}{2}\mu^T\Sigma^{-1}\mu}
 		e^{q^T\Sigma^{-1}\mu}
 		e^{-\frac{1}{2}q^T\Sigma^{-1} q} \\
-		\implies \tilde{f}(q) \le e^{\frac{1}{2}\mu^T\Sigma^{-1} \mu}e^{-\frac{1}{2}(q-\mu)^T\Sigma^{-1}(q-\mu)}.
+		\implies \tilde{f}(q) \le 2^{-n}e^{\frac{1}{2}\mu^T\Sigma^{-1} \mu}e^{-\frac{1}{2}(q-\mu)^T\Sigma^{-1}(q-\mu)}.
 	\end{gather}
 	Using now the normalisation constant of the Multivariate Gaussian distribution 
 	\begin{gather}
@@ -87,7 +91,7 @@
 	we can define $g$ and $C$ as 
 	\begin{gather}
 		g(q)=\frac{1}{\sqrt{(2\pi)^p|\Sigma|}}e^{-\frac{1}{2}(q-\mu)^T\Sigma^{-1}(q-\mu)}, \\
-		C = e^{\frac{1}{2}\mu^T\Sigma^{-1} \mu}{\sqrt{(2\pi)^p|\Sigma|}} = \sqrt{(2\pi)^p|\Sigma|e^{\mu^T\Sigma^{-1} \mu}}.
+		C = 2^{-n}e^{\frac{1}{2}\mu^T\Sigma^{-1} \mu}{\sqrt{(2\pi)^p|\Sigma|}} = 2^{-n}\sqrt{(2\pi)^p|\Sigma|e^{\mu^T\Sigma^{-1} \mu}}.
 	\end{gather} 
 	\section{Section ...}
 	\section{Conclusion}

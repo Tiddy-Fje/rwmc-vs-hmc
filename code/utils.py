@@ -31,7 +31,7 @@ def preprocess_data():
     - Standardizes the age and weight columns.
     - Transform race and physician visit columns into binary columns.
     '''
-    df = pd.read_csv('data/birthwt.csv')
+    df = pd.read_csv('../data/birthwt.csv')
     
     df = df.rename(columns={'ptl': 'premature birth', 'ht': 'hypertension', 'ui': 'uterine irritability'})
 
@@ -47,19 +47,21 @@ def preprocess_data():
                 'hypertension', 'uterine irritability', 'first physician visit', 'more physician visits']    
     df = df[keys]
 
-    log_odds_dic = {key: 1. for key in keys}
-    log_odds_dic['premature birth'] = 5.
-    log_odds_dic['weight'] = 5.
+    keys.remove('low')
+    log_odds_dic = {key: np.exp(1) for key in keys}
+    #log_odds_dic['premature birth'] *= 3.
+    #log_odds_dic['weight'] *= 3.
     log_odds = [log_odds_dic[key] for key in keys]
-    sigmas = np.log( np.array(log_odds) )
+    sigmas = np.log( np.array(log_odds) )*1.
     
     X = np.array(df.drop(columns = ['low']))
     y = np.array(df['low'])
     return X, y, sigmas
 
-def logposterior(X, y, q, sigma):
+def logposterior(X, y, sigma):
     temp = X.T @ (y - 1)
     def logdensity( q ):
+        #print(np.min(X@q))
         return q.T @ temp - np.sum(np.log(1 + np.exp(- X @ q))) - 0.5 * np.sum(q**2/sigma**2)
     def logdensity_grad( q ):
         return temp + X.T @ (1/(1 + np.exp(X @ q))) - q/sigma**2
