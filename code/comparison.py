@@ -53,7 +53,6 @@ def sample_from_info( info, general, unnorm_logdensity, unnorm_logdensity_grad )
     elif info['sampler_type'] == 'RWMC':
         sampler = RandomWalkMCMC(general['seed'], general['initial_condition'], \
                                  unnorm_logdensity, general['burn_in'], info['step_size'])
-    print(general['n_samples'])
     return sampler.sample(general['n_chains'], general['n_samples'])
 
 
@@ -76,9 +75,10 @@ def main(config_file, plot_potential):
     else : 
         case1_samples = sample_from_info( config['Case1'], config['General'], unnorm_logdensity, unnorm_logdensity_grad )
         case2_samples = sample_from_info( config['Case2'], config['General'], unnorm_logdensity, unnorm_logdensity_grad )
-    
-    plot_2d_kde( case1_samples, case2_samples, config['Case1']['title'], \
-                config['Case2']['title'], config['General']['fig_name'] )
+
+    if True : 
+        plot_2d_kde( case1_samples, case2_samples, config['Case1']['title'], \
+                    config['Case2']['title'], config['General']['fig_name'] )
     return
 
 if __name__ == '__main__':
