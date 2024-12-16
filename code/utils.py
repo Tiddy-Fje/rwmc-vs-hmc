@@ -43,27 +43,30 @@ def preprocess_data():
     df['first physician visit'] = df['ftv'].apply(lambda x: 1 if x > 0 else 0)
     df['more physician visits'] = df['ftv'].apply(lambda x: 1 if x > 1 else 0)
 
-    keys = ['low', 'age', 'weight', 'african/american', 'other race', 'smoke', 'premature birth',
-                'hypertension', 'uterine irritability', 'first physician visit', 'more physician visits']    
-    df = df[keys]
+    df['intercept'] = 1
 
-    log_odds_dic = {key: 1. for key in keys}
-    log_odds_dic['premature birth'] = 5.
-    log_odds_dic['weight'] = 5.
+    keys = ['low', 'age', 'weight', 'african/american', 'other race', 'smoke', 'premature birth', 'hypertension',
+                'uterine irritability', 'first physician visit', 'more physician visits', 'intercept']    
+    df = df[keys]
+    keys.remove('low')
+
+    log_odds_dic = {key: np.exp(1) for key in keys}
+    #log_odds_dic['premature birth'] *= 5.
+    #log_odds_dic['weight'] *= 5.
     log_odds = [log_odds_dic[key] for key in keys]
-    sigmas = np.log( np.array(log_odds) )
+    sigmas = np.log( np.array(log_odds) )*10
     
     X = np.array(df.drop(columns = ['low']))
     y = np.array(df['low'])
     return X, y, sigmas
 
-def logposterior(X, y, q, sigma):
+def logposterior(X, y, sigma):
     temp = X.T @ (y - 1)
     def logdensity( q ):
         return q.T @ temp - np.sum(np.log(1 + np.exp(- X @ q))) - 0.5 * np.sum(q**2/sigma**2)
     def logdensity_grad( q ):
         return temp + X.T @ (1/(1 + np.exp(X @ q))) - q/sigma**2
-    return logdensity
+    return logdensity, logdensity_grad
 
 def plot_2d_kde( samples1, samples2, title1, title2, figname ):
     '''
@@ -124,10 +127,10 @@ def plot_eff_sample_size(samples1, samples2, label1, label2, dt, t):
     if label2 == 'RWMC': plot_RWMC(samples2, label2)
     else: plot_HMC(samples2, label2, dt, t)
     plt.legend()
-    plt.xlabel('Effective sample size')
-    plt.ylabel('Number of evaluations')
+    plt.ylabel('Effective sample size')
+    plt.xlabel('Number of evaluations')
     plt.grid()
-    plt.savefig( f'../figures/effective_sample_size.png' )
+    #plt.savefig( f'../figures/effective_sample_size.png' )
     plt.show()
 
 def plot_acf(samples1, samples2, label1, label2):
