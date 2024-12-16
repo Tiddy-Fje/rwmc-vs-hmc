@@ -14,6 +14,7 @@ class MCMCSampler(ABC):
         self.burn_in = burn_in
         self.rng = np.random.default_rng(seed)
         self.state = self.initial_condition.copy()
+        self.n_evaluations = 0
     
     def reset_state(self, only_state=False):
         '''
@@ -60,6 +61,7 @@ class MCMCSampler(ABC):
         
         acceptance_rate /= (n_chains * n_samples)
         print(f'Acceptance Rate: {acceptance_rate:.2f}')
+        print(f'Number of function evaluations: {self.n_evaluations}')
         return samples[:, self.burn_in:, :]
     
     @abstractmethod
@@ -89,6 +91,7 @@ class RandomWalkMCMC(MCMCSampler):
         proposed_state = current_state + self.step_size * self.rng.normal(0, 1, size=current_state.shape)
         current_logdensity = self.unnorm_logdensity(current_state)
         proposed_logdensity = self.unnorm_logdensity(proposed_state)
+        self.n_evaluations += 1
 
         return self.MH_acceptance_rule(current_state, proposed_state, current_logdensity, proposed_logdensity)
 
@@ -98,6 +101,7 @@ class HamiltonianMCMC(MCMCSampler):
     '''
     def __init__(self, seed, initial_condition, unnorm_logdensity, burn_in, unnorm_logdensity_grad, mass, leapfrog_time, dt):
         super().__init__(seed, initial_condition, unnorm_logdensity, burn_in)
+        assert (np.array(mass) != 0).all(), 'Mass must be non-zero.'
         try:
             iterator = iter(mass)
             self.mass = np.array(mass)
@@ -117,13 +121,15 @@ class HamiltonianMCMC(MCMCSampler):
         
         for _ in range(self.num_leapfrog_steps):
             proposed_momentum += 0.5 * self.dt * self.unnorm_logdensity_grad(proposed_state)
-            proposed_state += self.dt * proposed_momentum
+            proposed_state += self.dt * proposed_momentum / self.mass
             proposed_momentum += 0.5 * self.dt * self.unnorm_logdensity_grad(proposed_state)
+            self.n_evaluations += 2
             #print(proposed_momentum, proposed_state)
             #time.sleep(1)
 
         current_energy = -self.unnorm_logdensity(current_state) + np.dot(momentum,momentum) / 2
         proposed_energy = -self.unnorm_logdensity(proposed_state) + np.dot(proposed_momentum,proposed_momentum) / 2
+        self.n_evaluations += 1
         
         return self.MH_acceptance_rule(current_state, proposed_state, -current_energy, -proposed_energy)
 
