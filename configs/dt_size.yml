@@ -16,6 +16,6 @@ General :
   seed : 1234
   initial_condition : [0.,0.]
   burn_in : 100
-  n_chains : 3
+  n_chains : 1
   n_samples : 1000
   fig_name : dt_size

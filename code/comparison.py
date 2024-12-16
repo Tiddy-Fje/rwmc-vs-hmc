@@ -53,7 +53,7 @@ def sample_from_info( info, general, unnorm_logdensity, unnorm_logdensity_grad )
     elif info['sampler_type'] == 'RWMC':
         sampler = RandomWalkMCMC(general['seed'], general['initial_condition'], \
                                  unnorm_logdensity, general['burn_in'], info['step_size'])
-    
+    print(general['n_samples'])
     return sampler.sample(general['n_chains'], general['n_samples'])
 
 
@@ -67,8 +67,15 @@ def main(config_file, plot_potential):
         config = yaml.safe_load(file) 
     
     unnorm_logdensity, unnorm_logdensity_grad = test_example(100, plot=True)
-    case1_samples = sample_from_info( config['Case1'], config['General'], unnorm_logdensity, unnorm_logdensity_grad )
-    case2_samples = sample_from_info( config['Case2'], config['General'], unnorm_logdensity, unnorm_logdensity_grad )
+    if config['Case1']['sampler_type'] == 'RWMC' and config['Case2']['sampler_type'] == 'HMC':
+        # we adapt the number of samples for the RWMC case so that function evaluations match
+        case2_samples = sample_from_info( config['Case2'], config['General'], unnorm_logdensity, unnorm_logdensity_grad )
+        factor = config['Case2']['t'] / config['Case2']['dt']
+        config['General']['n_samples'] += int( 2 * config['General']['n_samples'] * factor )
+        case1_samples = sample_from_info( config['Case1'], config['General'], unnorm_logdensity, unnorm_logdensity_grad )
+    else : 
+        case1_samples = sample_from_info( config['Case1'], config['General'], unnorm_logdensity, unnorm_logdensity_grad )
+        case2_samples = sample_from_info( config['Case2'], config['General'], unnorm_logdensity, unnorm_logdensity_grad )
     
     plot_2d_kde( case1_samples, case2_samples, config['Case1']['title'], \
                 config['Case2']['title'], config['General']['fig_name'] )
