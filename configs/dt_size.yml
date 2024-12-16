@@ -17,5 +17,6 @@ General :
   initial_condition : [0.,0.]
   burn_in : 100
   n_chains : 1
+  alpha : 10
   n_samples : 1000
   fig_name : dt_size

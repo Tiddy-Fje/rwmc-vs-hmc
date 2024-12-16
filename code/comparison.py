@@ -66,7 +66,7 @@ def main(config_file, plot_potential):
     with open(config_file, 'r') as file:
         config = yaml.safe_load(file) 
     
-    unnorm_logdensity, unnorm_logdensity_grad = test_example(100, plot=True)
+    unnorm_logdensity, unnorm_logdensity_grad = test_example(config['General']['alpha'], plot=True)
     if config['Case1']['sampler_type'] == 'RWMC' and config['Case2']['sampler_type'] == 'HMC':
         # we adapt the number of samples for the RWMC case so that function evaluations match
         case2_samples = sample_from_info( config['Case2'], config['General'], unnorm_logdensity, unnorm_logdensity_grad )

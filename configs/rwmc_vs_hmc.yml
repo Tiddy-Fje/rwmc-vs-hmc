@@ -13,6 +13,7 @@ Case2 :
 General :
   seed : 1234
   initial_condition : [0.,0.]
+  alpha : 10
   burn_in : 100
   n_chains : 1
   n_samples : 1000
