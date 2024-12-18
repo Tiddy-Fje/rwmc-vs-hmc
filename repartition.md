@@ -1,19 +1,21 @@
 ## To do :
 * redact theoretical results 
-* analysis of (d) 
-  * as function of algorithm 
-  * as function of params 
+  * do we include the failed rejection sampling in the appendix ?? 
+* analysis of (d) (as function of algorithm and params) 
   * in terms of ESS
   * in terms of KL distance
-    * would have to define binning 
-    * then compute density within bins
-    * could have baseline with samples from perfect distribution (with radial coordinates ??)
+    * as function of params of interest
+    * extra (only if time) : determine baseline with samples from "perfect" distribution obtained with $F^{-1}$ in polar coordinates 
 * histograms for (e)
 * solve (f)
-  * get a reply from the TA 
-  * ... ??
-
-    * think about insightful plots for the (d) (lower priority)
+  * just use RWMC 
+  * can look at 
+    * how similar results are 
+    * convergence speed in the trace plots (in high dimensions RWMC might behave less well)
+    * ESS of the parameters (RWMC might have really low acceptance rate)
+    * CI (does it make sense tho if we don't know the real values ??)
+* introduction and conclusion 
+  * last thing (when rest is done)
 
 ## Things to explore
 - asymmetric masses (we loose symmetry alignment with problem??)
