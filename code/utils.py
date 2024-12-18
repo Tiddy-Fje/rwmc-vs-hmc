@@ -4,6 +4,10 @@ import matplotlib.pyplot as plt
 from statsmodels.tsa.stattools import acf
 import pandas as pd
 
+def two_dim_input_fun( fun, grid_x, grid_y ):
+    arg = [grid_x,grid_y]
+    result = fun(np.array(arg).reshape(2, -1))
+    return result.reshape( grid_x.shape )
 
 def test_example( alpha, beta=0.25, plot=False ):
     '''
@@ -20,7 +24,7 @@ def test_example( alpha, beta=0.25, plot=False ):
         X, Y = np.meshgrid(x, y)
         fig, ax = plt.subplots()
         Z = np.exp(unnorm_logdensity([X,Y]))
-        ax.contourf(X, Y, Z, levels=100)
+        ax.contourf(X, Y, Z/np.sum(Z), levels=200)
         plt.savefig(f'../figures/density_alpha={alpha}.png')
     
     return unnorm_logdensity, unnorm_logdensity_grad

@@ -1,11 +1,12 @@
 import yaml
 import numpy as np
 import argparse
-from utils import test_example, plot_2d_kde
+from utils import test_example
 from sampler import RandomWalkMCMC, HamiltonianMCMC
 from matplotlib import pyplot as plt
 from matplotlib import cm
 from matplotlib.ticker import LinearLocator
+from similarity import similarity
 
 # fix rcParams for plotting
 plt.rcParams.update({'font.size': 14})
@@ -45,7 +46,7 @@ def plot_U_pot( alpha ):
     return
 
 
-def sample_from_info( info, general, unnorm_logdensity, unnorm_logdensity_grad ):
+def sample_from_info( info, general, unnorm_logdensity, unnorm_logdensity_grad, return_info=False ):
     sampler = None
     if info['sampler_type'] == 'HMC':
         sampler = HamiltonianMCMC(general['seed'], general['initial_condition'], \
@@ -53,7 +54,7 @@ def sample_from_info( info, general, unnorm_logdensity, unnorm_logdensity_grad )
     elif info['sampler_type'] == 'RWMC':
         sampler = RandomWalkMCMC(general['seed'], general['initial_condition'], \
                                  unnorm_logdensity, general['burn_in'], info['step_size'])
-    return sampler.sample(general['n_chains'], general['n_samples'])
+    return sampler.sample(general['n_chains'], general['n_samples'], return_info)
 
 
 def main(config_file, plot_potential):
@@ -76,9 +77,15 @@ def main(config_file, plot_potential):
         case1_samples = sample_from_info( config['Case1'], config['General'], unnorm_logdensity, unnorm_logdensity_grad )
         case2_samples = sample_from_info( config['Case2'], config['General'], unnorm_logdensity, unnorm_logdensity_grad )
 
-    if True : 
-        plot_2d_kde( case1_samples, case2_samples, config['Case1']['title'], \
-                    config['Case2']['title'], config['General']['fig_name'] )
+    sim1, sim_std1 = similarity( case1_samples, unnorm_logdensity, step_x=0.025, step_y=0.025, plot=True, unorm_log=True )
+    sim2, sim_std2 = similarity( case2_samples, unnorm_logdensity, step_x=0.025, step_y=0.025, plot=True, unorm_log=True )
+    print(f'Similarity for {config['Case1']['sampler_type']} : {sim1:.2f} pm {2*sim_std1:.2f}')
+    print(f'Similarity for {config['Case2']['sampler_type']} : {sim2:.2f} pm {2*sim_std2:.2f}')
+
+    plt.show()
+        #plot_2d_kde( case1_samples, case2_samples, config['Case1']['title'], \
+        #            config['Case2']['title'], config['General']['fig_name'] )
+        # this was quite slow and too qualitative
     return
 
 if __name__ == '__main__':

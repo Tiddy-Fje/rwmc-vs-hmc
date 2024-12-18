@@ -1,0 +1,25 @@
+Sampler : 
+  sampler_type : HMC
+  t : .21
+  dt : 0.03
+  mass : 
+    - [0.3,0.3]
+    - [0.4,0.4]
+    - [0.5, 0.5]
+    - [0.75,0.75]
+    - [1.,1.]
+    - [1.5,1.5]
+    - [2.2,2.2]
+    - [3.,3.]
+
+
+General :
+  seed : 1234
+  initial_condition : [0.5,0.]
+  alpha : 1000
+  burn_in : 100
+  n_chains : 5
+  n_samples : 3000
+  fig_name : mass_scan
+  save_fig : True
+  param_to_scan : mass

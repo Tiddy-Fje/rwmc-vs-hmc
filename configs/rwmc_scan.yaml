@@ -1,0 +1,23 @@
+Sampler : 
+  sampler_type : RWMC
+  title : RWMC
+  step_size : 
+    - [0.03, 0.03]
+    - [0.04, 0.04]
+    - [0.05, 0.05]
+    - [0.065, 0.065]
+    - [0.085,0.085]
+    - [0.125, 0.125]
+    - [0.25,0.25]
+    - [0.5,0.5]
+
+General :
+  seed : 1234
+  initial_condition : [0.5,0.]
+  alpha : 10
+  burn_in : 100
+  n_chains : 10
+  n_samples : 3000
+  fig_name : step_size_scan
+  save_fig : True
+  param_to_scan : step_size

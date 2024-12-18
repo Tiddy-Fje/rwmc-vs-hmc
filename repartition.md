@@ -1,40 +1,19 @@
-* repartition
-  * Aude
-    * (a)
-    * (b)
-    * (d bis) : 
-  * Tara
-    * (c)
-    * (d preums) :
-* deadlines 
-  * we aim to finish the 20th
-  * while both in Laus could work together ! 
-* next meeting : end of week 
-  * Aude will prob have caught up with class, also (a) and (b)
-  * (d bis) would be for next week 
-  * Tara does (c) and starts (hopefully) finish the (d preums)
-* 15:30-17:00 lab meeting on Thur (maybe can meet before/after lunch), otherwise free on Fri (not available 13th)
-* dimanche best (keep if free for it) -> 10:00 - ~16:30 
+## To do :
+* redact theoretical results 
+* analysis of (d) 
+  * as function of algorithm 
+  * as function of params 
+  * in terms of ESS
+  * in terms of KL distance
+    * would have to define binning 
+    * then compute density within bins
+    * could have baseline with samples from perfect distribution (with radial coordinates ??)
+* histograms for (e)
+* solve (f)
+  * get a reply from the TA 
+  * ... ??
 
-
-## Meeting of the 6th 
-* goals ??
-  * updates on how it is going
-    * help needed ?
-    * ...
-  * quick explanation of code/workflow ??
-  * ...
-  * setting next steps 
-* ...
-* next steps
-  * Aude
-    * code measures for the (d)
-    * start looking into (e)
-    * start looking into analysis with ESS etc. for the (d) (lower priority)
-  * Tara
-    * start looking into (f)
     * think about insightful plots for the (d) (lower priority)
-  * remark : could do analysis together on Sunday !
 
 ## Things to explore
 - asymmetric masses (we loose symmetry alignment with problem??)

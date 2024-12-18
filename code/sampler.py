@@ -35,7 +35,7 @@ class MCMCSampler(ABC):
         else:
             return current_state, False
 
-    def sample(self, n_chains, n_samples):
+    def sample(self, n_chains, n_samples, return_info=False):
         '''
         Generates samples using the Metropolis-Hastings algorithm.
         Parameters:
@@ -60,6 +60,9 @@ class MCMCSampler(ABC):
                 samples[chain_idx, sample_idx, :] = current_state
         
         acceptance_rate /= (n_chains * n_samples)
+        if return_info:
+            return samples[:, self.burn_in:, :], acceptance_rate, self.n_evaluations
+
         print(f'Acceptance Rate: {acceptance_rate:.2f}')
         print(f'Number of function evaluations: {self.n_evaluations}')
         return samples[:, self.burn_in:, :]
