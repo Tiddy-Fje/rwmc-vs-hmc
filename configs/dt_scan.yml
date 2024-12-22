@@ -1,0 +1,22 @@
+Sampler : 
+  sampler_type : HMC
+  mass : [.7,.7]
+  t : 0.24
+  dt : 
+    - .01
+    - .02
+    - .03
+    - .04
+    - .06
+#    - .12
+
+General :
+  seed : 1234
+  initial_condition : [0.5,0.]
+  alpha : 1000
+  burn_in : 100
+  n_chains : 5
+  n_samples : 3000
+  fig_name : dt_scan
+  save_fig : True
+  param_to_scan : dt

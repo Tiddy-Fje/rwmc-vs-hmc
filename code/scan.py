@@ -32,7 +32,7 @@ def main(config_file):
     # inspired from an example in the matplotlib documentation
     fig, ax1 = plt.subplots()
 
-    ax1.set_xscale('log')
+    #ax1.set_xscale('log')
     upper_param2_scan = param2_scan.upper()
     ax1.set_xlabel(f'{upper_param2_scan[:1]}{param2_scan[1:].replace('_', ' ')}')
 
@@ -48,7 +48,7 @@ def main(config_file):
     ax2.set_ylabel('Acceptance rete')
 
     if config['General']['save_fig'] :
-        plt.savefig( f'../figures/{config['General']['fig_name']}.png' )
+        plt.savefig( f'../figures/{config['General']['fig_name']}_alpha={config['General']['alpha']}.png' )
         return
     plt.show()
 

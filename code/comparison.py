@@ -13,13 +13,19 @@ plt.rcParams.update({'font.size': 14})
 plt.rcParams.update({'lines.linewidth': 2, 'lines.markersize': 10})
 plt.rcParams.update({'figure.autolayout': True})
 
+
+def get_RWMC_nsamples_from_HMC( hmc_nsamples, hmc_info ):
+    factor = hmc_info['t'] / hmc_info['dt']
+    hmc_nsamples += int( 2 * hmc_nsamples * factor )
+    return hmc_nsamples
+
 def plot_U_pot( alpha ):
     '''
     Surface plot of the potential energy associated to the test_example() example.
     
     alpha: float, the parameter of the potential energy.
     '''
-    fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
+    fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
 
     r = np.linspace(0, .7, 100)
     p = np.linspace(0, 2*np.pi, 100)
@@ -77,15 +83,17 @@ def main(config_file, plot_potential):
         case1_samples = sample_from_info( config['Case1'], config['General'], unnorm_logdensity, unnorm_logdensity_grad )
         case2_samples = sample_from_info( config['Case2'], config['General'], unnorm_logdensity, unnorm_logdensity_grad )
 
-    sim1, sim_std1 = similarity( case1_samples, unnorm_logdensity, step_x=0.025, step_y=0.025, plot=True, unorm_log=True )
-    sim2, sim_std2 = similarity( case2_samples, unnorm_logdensity, step_x=0.025, step_y=0.025, plot=True, unorm_log=True )
-    print(f'Similarity for {config['Case1']['sampler_type']} : {sim1:.2f} pm {2*sim_std1:.2f}')
-    print(f'Similarity for {config['Case2']['sampler_type']} : {sim2:.2f} pm {2*sim_std2:.2f}')
+    fig, ax = plt.subplots(1, 2, figsize=(14, 6))
 
-    plt.show()
-        #plot_2d_kde( case1_samples, case2_samples, config['Case1']['title'], \
-        #            config['Case2']['title'], config['General']['fig_name'] )
-        # this was quite slow and too qualitative
+    sim1, sim_std1 = similarity( case1_samples, unnorm_logdensity, step_x=0.025, step_y=0.025, unorm_log=True, ax=ax[0] )
+    sim2, sim_std2 = similarity( case2_samples, unnorm_logdensity, step_x=0.025, step_y=0.025, unorm_log=True, ax=ax[1] ) 
+    ax[0].set_title(f'Similarity : {sim1:.2f} pm {2*sim_std1:.2f}')
+    ax[1].set_title(f'Similarity : {sim2:.2f} pm {2*sim_std2:.2f}')
+    plt.savefig(f'../figures/{config['General']['fig_name']}_alpha={config['General']['alpha']}.png')
+
+    #plot_2d_kde( case1_samples, case2_samples, config['Case1']['title'], \
+    #            config['Case2']['title'], config['General']['fig_name'] )
+    # this was quite slow and too qualitative
     return
 
 if __name__ == '__main__':

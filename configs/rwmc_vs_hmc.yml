@@ -1,7 +1,7 @@
 Case1 : 
   sampler_type : RWMC
   title : RWMC
-  step_size : [1.,1.]
+  step_size : [0.085,0.085]
 
 Case2 : 
   sampler_type : HMC

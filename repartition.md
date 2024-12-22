@@ -1,18 +1,26 @@
 ## To do :
 * redact theoretical results 
+  * can keep them in the same section with theory 
   * do we include the failed rejection sampling in the appendix ?? 
+  * included well commented sampler in appendex
+    * just comment a bit more 
 * analysis of (d) (as function of algorithm and params) 
-  * in terms of ESS
   * in terms of KL distance
     * as function of params of interest
-    * extra (only if time) : determine baseline with samples from "perfect" distribution obtained with $F^{-1}$ in polar coordinates 
+    * continue checking for best params
+      * can plot best RW as line in HMC plots
+      * could show plot as function of sample size (for best parameters)
+      * give best values to Aude for ACF/ESS analysis   
+  * in terms of ESS -> Aude does it
+  * extra (only if time) : determine baseline with samples from "perfect" distribution obtained with $F^{-1}$ in polar coordinates 
 * histograms for (e)
 * solve (f)
+  * should include in (e) for report 
   * just use RWMC 
   * can look at 
     * how similar results are 
     * convergence speed in the trace plots (in high dimensions RWMC might behave less well)
-    * ESS of the parameters (RWMC might have really low acceptance rate)
+    * ESS/ACF of the parameters (RWMC might have really low acceptance rate) -> would have to adapt functions for higher dimensional samples
     * CI (does it make sense tho if we don't know the real values ??)
 * introduction and conclusion 
   * last thing (when rest is done)

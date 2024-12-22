@@ -78,7 +78,7 @@ def discretize(fun, grid_x, grid_y, unorm_log=False):
     
     return prob_density
 
-def similarity( samples, fun, x_length=2, y_length=2, step_x=0.1, step_y=0.1, plot=False, unorm_log=False ):
+def similarity( samples, fun, x_length=2, y_length=2, step_x=0.1, step_y=0.1, plot=False, unorm_log=False, ax=None ):
     '''
     Routine for computing similarity associated to arguments.
 
@@ -109,22 +109,17 @@ def similarity( samples, fun, x_length=2, y_length=2, step_x=0.1, step_y=0.1, pl
     sim = np.mean( 1 - dists )
     sim_std = np.std( 1 - dists ) / np.sqrt(n_chains)
 
-    if plot:
-        plt.figure(figsize=(12, 5))
-
-        plt.subplot(1, 2, 1)
-        plt.title('Sample Distribution')
+    if plot or ax is not None:
+        ax.set_title('Sample Distribution')
         # plotting only the first chain
-        plt.pcolormesh(grid_x, grid_y, frequencies[0,:,:]/n_samples, shading='auto', cmap='Blues')
-        plt.colorbar()
+        l = ax.pcolormesh(grid_x, grid_y, frequencies[0,:,:]/n_samples, shading='auto', cmap='Blues')
+        plt.colorbar(l, ax=ax, label='Probability')
 
-        plt.subplot(1, 2, 2)
-        plt.title('Target Distribution')
-        plt.pcolormesh(grid_x, grid_y, probabilities, shading='auto', cmap='Reds')
-        plt.colorbar()
-        plt.title(f'Similarity: {sim:.2f} pm {2*sim_std:.2f}')
-        plt.tight_layout()
-        plt.show()
+        #plt.subplot(1, 2, 2)
+        #plt.title('Target Distribution')
+        #plt.pcolormesh(grid_x, grid_y, probabilities, shading='auto', cmap='Reds')
+        #plt.colorbar()
+        #plt.title(f'Similarity: {sim:.2f} pm {2*sim_std:.2f}')
 
     return sim, sim_std
 

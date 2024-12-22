@@ -15,9 +15,9 @@ Sampler :
 General :
   seed : 1234
   initial_condition : [0.5,0.]
-  alpha : 1000
+  alpha : 10
   burn_in : 100
-  n_chains : 100
+  n_chains : 15
   n_samples : 3000
   fig_name : step_size_scan
   save_fig : True
