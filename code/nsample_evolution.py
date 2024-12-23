@@ -33,10 +33,11 @@ def main(config_file, ax=None):
         _, ax = plt.subplots(1, 1, figsize=(10, 6))
         flag = True
     
-    ax.errorbar( n_samples, sim, yerr=2*sim_std, fmt='s', linestyle='--', color='tab:blue' )
-    ax.errorbar( n_samples, rwmc_sim, yerr=2*rwmc_sim_std, fmt='s', linestyle='--', color='tab:red' )
+    ax.errorbar( n_samples, sim, yerr=2*sim_std, fmt='s', linestyle='--', color='tab:blue', label='HMC' )
+    ax.errorbar( n_samples, rwmc_sim, yerr=2*rwmc_sim_std, fmt='s', linestyle='--', color='tab:red', label='RWMC' )
     ax.set_xlabel('N samples')
     ax.set_ylabel('Similarity')
+    ax.legend()
 
     if flag:
         filename = f'../figures/{config["General"]["fig_name"]}_alpha={config["General"]["alpha"]}.png'
