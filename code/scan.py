@@ -7,7 +7,7 @@ from comparison import sample_from_info
 from similarity import similarity
 
 
-def main(config_file):
+def main(config_file, ax=None):
     config = None
     with open(config_file, 'r') as file:
         config = yaml.safe_load(file) 
@@ -30,7 +30,12 @@ def main(config_file):
         params = [params[i][0] for i in range(len(params))]
 
     # inspired from an example in the matplotlib documentation
-    fig, ax1 = plt.subplots()
+    flag = False
+
+    ax1 = ax
+    if ax is None:
+        _, ax1 = plt.subplots()
+        flag = True
 
     #ax1.set_xscale('log')
     upper_param2_scan = param2_scan.upper()
@@ -38,7 +43,7 @@ def main(config_file):
 
     color = 'tab:blue'
     ax1.errorbar( params, sims, yerr=2*stds, fmt='s', linestyle='--', color=color )
-    ax1.set_ylabel('Target-similarity')
+    ax1.set_ylabel('Target similarity')
     ax1.tick_params( axis='y', labelcolor=color )
 
     ax2 = ax1.twinx()
@@ -47,10 +52,9 @@ def main(config_file):
     ax2.tick_params( axis='y', labelcolor=color )
     ax2.set_ylabel('Acceptance rete')
 
-    if config['General']['save_fig'] :
-        plt.savefig( f'../figures/{config['General']['fig_name']}_alpha={config['General']['alpha']}.png' )
-        return
-    plt.show()
+    if flag:
+        filename = f'../figures/{config["General"]["fig_name"]}_alpha={config["General"]["alpha"]}.png'
+        plt.savefig( filename )
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

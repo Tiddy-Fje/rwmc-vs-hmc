@@ -20,7 +20,7 @@ General :
   initial_condition : [0.5,0.]
   alpha : 1000
   burn_in : 100
-  n_chains : 5
+  n_chains : 10
   n_samples : 3000
   fig_name : t_scan
   save_fig : True

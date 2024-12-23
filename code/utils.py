@@ -25,6 +25,8 @@ def test_example( alpha, beta=0.25, plot=False ):
         fig, ax = plt.subplots()
         Z = np.exp(unnorm_logdensity([X,Y]))
         ax.contourf(X, Y, Z/np.sum(Z), levels=200)
+        ax.set_xlabel('q_1')
+        ax.set_ylabel('q_2')
         plt.savefig(f'../figures/density_alpha={alpha}.png')
     
     return unnorm_logdensity, unnorm_logdensity_grad

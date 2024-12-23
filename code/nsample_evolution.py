@@ -6,7 +6,7 @@ from comparison import sample_from_info, test_example, get_RWMC_nsamples_from_HM
 from similarity import similarity
 import yaml
 
-def main(config_file):
+def main(config_file, ax=None):
     with open(config_file, 'r') as file:
         config = yaml.safe_load(file) 
     unnorm_logdensity, unnorm_logdensity_grad = test_example(config['General']['alpha'])
@@ -28,20 +28,25 @@ def main(config_file):
         rwmc_sim[i], rwmc_sim_std[i] = similarity( rwmc_samples[:,:rwmc_n,:], unnorm_logdensity, step_x=0.025, step_y=0.025, unorm_log=True)
 
     # plot the samples
-    fig, ax = plt.subplots(1, 1, figsize=(10, 6))
+    flag = False
+    if ax is None:
+        _, ax = plt.subplots(1, 1, figsize=(10, 6))
+        flag = True
+    
     ax.errorbar( n_samples, sim, yerr=2*sim_std, fmt='s', linestyle='--', color='tab:blue' )
     ax.errorbar( n_samples, rwmc_sim, yerr=2*rwmc_sim_std, fmt='s', linestyle='--', color='tab:red' )
     ax.set_xlabel('N samples')
     ax.set_ylabel('Similarity')
-    plt.savefig( f'../figures/{config["General"]["fig_name"]}_alpha={config["General"]["alpha"]}.png' )
+
+    if flag:
+        filename = f'../figures/{config["General"]["fig_name"]}_alpha={config["General"]["alpha"]}.png'
+        plt.savefig( filename )
 
     return
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-f', '--config-file', type=str, help='Path to config file', required=True)
-    #parser.add_argument('-p', '--plot-potential', type=bool, help='Whether to plot potential energy', \
-    # required=False, default=False)
     
     args = parser.parse_args()
     main(args.config_file) # args.config_file is a filename 

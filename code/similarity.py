@@ -113,7 +113,7 @@ def similarity( samples, fun, x_length=2, y_length=2, step_x=0.1, step_y=0.1, pl
         ax.set_title('Sample Distribution')
         # plotting only the first chain
         l = ax.pcolormesh(grid_x, grid_y, frequencies[0,:,:]/n_samples, shading='auto', cmap='Blues')
-        plt.colorbar(l, ax=ax, label='Probability')
+        plt.colorbar(l, ax=ax, label='Density')
 
         #plt.subplot(1, 2, 2)
         #plt.title('Target Distribution')
