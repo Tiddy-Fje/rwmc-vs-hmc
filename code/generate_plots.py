@@ -3,6 +3,7 @@ from scan import main as scan_main
 from nsample_evolution import main as nsample_main
 from comparison import main as comparison_main
 from matplotlib import cm
+from utils import test_example
 
 from matplotlib.ticker import LinearLocator
 import numpy as np
@@ -45,7 +46,7 @@ def plot_U_pot( alpha ):
     return
 
 def fig_from_param( function, param, x_label ): 
-    param_fig, ax = plt.subplots(1, 2, figsize=(12, 6))
+    param_fig, ax = plt.subplots(1, 2, figsize=(12, 5))
     function(f'{config_dir}{param}_alpha=10{yaml}', ax=ax[0])
     function(f'{config_dir}{param}{yaml}', ax=ax[1])
     if x_label != None:
@@ -56,6 +57,7 @@ def fig_from_param( function, param, x_label ):
     filename = f'{fig_dir}{param}{png}'
     plt.savefig( filename )
     print(f'{param} figure done !')
+
 
 fig_from_param( scan_main, 't_scan', '$t$' )
 fig_from_param( scan_main, 'dt_scan', r'$\Delta t$' )
@@ -75,6 +77,13 @@ print(f'{param} figure done !')
 
 plot_U_pot( 10 )
 plot_U_pot( 1000 )
+
+param_fig, ax = plt.subplots(1, 2, figsize=(11, 4.5))
+_, __ = test_example( 10, ax=ax[0] )
+_, __ = test_example( 1000, ax=ax[1] )
+ax[0].set_title(r'$\alpha$ = 10')
+ax[1].set_title(r'$\alpha$ = 1000')
+plt.savefig(f'../figures/alpha_density.png')
 
 # could also call densitiy plots
 #

@@ -9,7 +9,7 @@ def two_dim_input_fun( fun, grid_x, grid_y ):
     result = fun(np.array(arg).reshape(2, -1))
     return result.reshape( grid_x.shape )
 
-def test_example( alpha, beta=0.25, plot=False ):
+def test_example( alpha, beta=0.25, ax=None ):
     '''
     Test function for the unnormalized density.
     '''
@@ -18,16 +18,14 @@ def test_example( alpha, beta=0.25, plot=False ):
     def unnorm_logdensity_grad( x ):
         return -4 * alpha * ( (x[0]**2 + x[1]**2) - beta ) * x
     
-    if plot:
+    if ax is not None:
         x = np.linspace(-1., 1., 100)
         y = np.linspace(-1., 1., 100)
         X, Y = np.meshgrid(x, y)
-        fig, ax = plt.subplots()
         Z = np.exp(unnorm_logdensity([X,Y]))
         ax.contourf(X, Y, Z/np.sum(Z), levels=200)
-        ax.set_xlabel('q_1')
-        ax.set_ylabel('q_2')
-        plt.savefig(f'../figures/density_alpha={alpha}.png')
+        ax.set_xlabel('$q_1$')
+        ax.set_ylabel('$q_2$')
     
     return unnorm_logdensity, unnorm_logdensity_grad
 
