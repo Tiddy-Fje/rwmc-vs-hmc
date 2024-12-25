@@ -1,8 +1,8 @@
 HMC : 
   sampler_type : HMC
-  mass : [1.,1.]
-  t : 0.09
-  dt : .03
+  mass : [.85,.85]
+  t : .09
+  dt : .09
 
 RWMC : 
   sampler_type : RWMC

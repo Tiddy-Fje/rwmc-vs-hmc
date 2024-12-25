@@ -4,14 +4,14 @@ from nsample_evolution import main as nsample_main
 from comparison import main as comparison_main
 from matplotlib import cm
 from utils import test_example
-
+import yaml
 from matplotlib.ticker import LinearLocator
 import numpy as np
 
 config_dir = '../configs/'
 fig_dir = '../figures/'
 png = '.png'
-yaml = '.yaml'
+yaml_ = '.yaml'
 
 def plot_U_pot( alpha ):
     '''
@@ -47,8 +47,8 @@ def plot_U_pot( alpha ):
 
 def fig_from_param( function, param, x_label ): 
     param_fig, ax = plt.subplots(1, 2, figsize=(12, 5))
-    function(f'{config_dir}{param}_alpha=10{yaml}', ax=ax[0])
-    function(f'{config_dir}{param}{yaml}', ax=ax[1])
+    function(f'{config_dir}{param}_alpha=10{yaml_}', ax=ax[0])
+    function(f'{config_dir}{param}{yaml_}', ax=ax[1])
     if x_label != None:
         ax[0].set_xlabel(x_label)
         ax[1].set_xlabel(x_label)
@@ -67,10 +67,10 @@ fig_from_param( nsample_main, 'nsamples_evolution', 'Number of samples' )
 
 param_fig, ax = plt.subplots(1, 2, figsize=(11, 4.5))
 param = 'mass_sym'
-comparison_main(f'{config_dir}{param}{yaml}', ax=ax)
+comparison_main(f'{config_dir}{param}{yaml_}', ax=ax)
 title0 = ax[0].get_title()
 title1 = ax[1].get_title()
-with open(f'{config_dir}{param}{yaml}', 'r') as file:
+with open(f'{config_dir}{param}{yaml_}', 'r') as file:
     config = yaml.safe_load(file) 
 m1 = config['Case1']['mass']
 m2 = config['Case2']['mass']
