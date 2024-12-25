@@ -23,6 +23,42 @@
 		\subsection{RWMC}
 		\subsection{HMC}
 			\subsubsection{The Algorithm}
+			A common shortfall of the simple random walk Metropolis proposal in the Metropolis-Hastings algorithm is the slow exploration rate of the state space. Much effort has been devoted in recent years to devise proposals with more efficient exploration rates (i.e "distant" proposals). One idea borrowed from physics, which, can be applied to most problems with continuous state space, is to introduce a "fictitious" Hamiltonian dynamics and "fictitious" momentum variables.
+
+			We recall that a Hamiltonian dynamical system is characterized by a Hamiltonian function $H$ : $\mathbb{R}^d \times \mathbb{R}^d \rightarrow \mathbb{R}, H=H(q, p)$, that is conserved during dynamics. Here $q=\left(q_1, \ldots, q_d\right)$ denotes the position vector and $p=\left(p_1, \ldots, p_d\right)$ denotes the momentum vector. The Hamiltonian dynamics is governed by the equations
+			
+			$$
+			\begin{aligned}
+			\frac{d q_i}{d t} & =\frac{\partial H}{\partial p_i} \\
+			\frac{d p_i}{d t} & =-\frac{\partial H}{\partial q_i}
+			\end{aligned}
+			$$
+			
+			for $i=1, \ldots, d$. In general, the above equation can be understood as a conservation of the total energy of a system in time.
+			Hamiltonian Monte Carlo takes inspiration from the previous physical system in order to construct a Markov Chain Monte Carlo algorithm with a given invariant density $\pi(q)$ on the position variables $\left(q_1, \ldots, q_d\right)$. To do so, we introduce the potential energy $U(q)=-\log \pi(q)$, a kinetic energy $K(p)=\sum_{i=1}^d \frac{p_i^2}{2 m_i}$, for some mass parameters $m_i, i=1, \ldots, d$, and the Hamiltonian $H(q, p)=U(q)+K(p)$. Having introduced these functions, we can then simulate a Markov chain in which each iteration re-samples the momentum, evolves the Hamiltonian system for a certain time, and then performs a Metropolis-type acceptance-rejection step on the new position vector. More concretely, we consider the so-called Gibbs distribution, given by
+
+			$$
+			G(q, p)=\frac{1}{Z} \exp (-H(p, q))
+			$$
+			
+			where $Z$ is the (unknown) normalizing constant. Notice that such a Gibbs distribution naturally factorizes as:
+
+			$$
+			G(q, p)=\frac{1}{\tilde{Z}} \exp (-U(q)) \frac{1}{\prod_{i=1}^d \sqrt{2 \pi m_i}} \exp (-K(p))
+			$$
+			
+			where $\frac{1}{Z} \exp (-U(q))$ is the probability density we are interested in sampling from, whereas $\frac{\exp (-K(p))}{\Pi_{i=1}^d \sqrt{2 \pi m_i}}$ is a multivariate Gaussian distribution $N(0, M)$ with $M=\operatorname{diag}\left(m_1, \ldots, m_d\right)$. Given the state $q^n$ at iteration $n$, the idea of the algorithm is then to sample a momentum vector $p^n$ from $N(0, M)$, and compute $H\left(q^n, p^n\right)$. The Hamiltonian system is then evolved starting from $q(0)=q^n, p(0)=p^n$, on a time interval [0,T] using equations (1), and (2) for some arbitrary final time $T$, to obtain $(q(T), p(T))$, where, in general, $q(T) \neq q(0)$. This state is then taken as the proposal state in a Metropolis-Hastings step to generate the new state $q^{n+1}$. For many problems of modern relevance, it is not possible to compute the dynamics exactly and numerical discretization is needed. A convenient time discretization scheme is the Verlet's method: the time interval $[0, T]$ is divided into $N_t$ intervals of size $\epsilon>0$ and for each particle $i$ the position $q_i$ and momemtum $p_i$ are updated as follows
+			
+			$$
+			\begin{aligned}
+			& p_i(t+\epsilon / 2)=p_i(t)-(\epsilon / 2) \frac{\partial U(q(t))}{\partial q_i} \\
+			& q_i(t+\epsilon)=q_i(t)+\epsilon \frac{p_i(t+\epsilon / 2)}{m_i} \\
+			& p_i(t+\epsilon)=p_i(t+\epsilon / 2)-(\epsilon / 2) \frac{\partial U(q(t+\epsilon))}{\partial q_i}
+			\end{aligned}
+			$$
+			
+			
+			The main steps of the Hamiltonian Monte Carlo algorithm using Verlet's method are outlined in Algorithm 1. There, $N$ is the length of the chain, $\epsilon$ the time step in Verlet's method, and $T$ the final integration time.
 			\subsubsection{Acceptance Rate}
 			To explore how the acceptance rate behaves in HMC, we must consider the quantity \newline $\exp \left[U\left(q^n\right)+K\left(p^n\right)-U\left(q^*\right)-K\left(p^*\right)\right]$ which appears in the expression for $\alpha$ in the Metropolis-Hastings acceptance probability. Using the definition $H(q, p)=U(q)+K(p)$ we can write this quantity as:
 			\begin{gather}
@@ -103,14 +139,10 @@
 					\label{fig:U-pot-alpha=10}
 			\end{wrapfigure}
 			Before exploring the impact of the different parameters of the HMC algorithm, we first present the potential energy landscape associated to the algorithm for this specific problem. The landscape is presented in figure \ref{fig:U-pot-alpha=10}. 
-			The landscape has polar symmetry, meaning the trajectories will be circles of fixed radius. It has global minima at a radius of 0.5 [CHECK] away from the centre and a local maxima at the centre. The only difference in the landscape for $\alpha=1000$ w.r.t. the $\alpha=10$ one is the scale of the potential. This means that the $\alpha=1000$ will give rise to stronger potential forces, which translates the fact that the density is more localised. 
+			The landscape has polar symmetry, meaning the trajectories will be some sort of symmetric oscillations. It has global minima at a radius of $\sqrt{0.25}=0.5$ away from the centre and a local maxima at the centre. The only difference in the landscape for $\alpha=1000$ w.r.t. the $\alpha=10$ one is the scale of the potential. This means that the $\alpha=1000$ will give rise to stronger potential forces, which translates the fact that the density is more localised. 
 			\subsubsection{Impact of Integration Time}
 			The first parameter we explore is the integration time. For this parameter, we expect the optimal value to be the one that allows the sampler to explore the whole space, without being excessively long (as it would slow down sampling).
 			The similarities associated to 3000 samples for the different integration times are presented in figure \ref{fig:t-scan}.
-
-			- qualitatively same behaviour : increase of similarity with integration time, followed by a plateau (though more noisy for $\alpha=1000$ case).
-			- the plateau is reached quicker for the $\alpha=10$ case, probably because the forces are stronger and the sampler can explore the space more quickly.
-			- good values for the integration time 
 			\begin{figure}[htb]
 				\centering
 					\vspace{0em}
@@ -118,8 +150,13 @@
 					\caption{Similarity as a function of HMC integration time for considered values of $\alpha$.}
 					\label{fig:t-scan}
 			\end{figure}
-			\lipsum[1]
+			From a qualitative point of view, the behaviour is the same for both settings : similarity increases as a function of $t$ untill a plateau is reached. Looking more closely, we notice that the curve is more noisy for the $\alpha=1000$ case. This might be due to the smaller characteristic time of the dynamics, which makes the particle .... [FILL]
+			- the plateau is reached quicker for the $\alpha=10$ case, probably because the forces are stronger and the sampler can explore the space more quickly.
+			For the $\alpha=10$ case, $t=8$ seems to strike a good balance for the mentionned trade-off. In the $t=1000$ case ...[FILL] 
 			\subsection{Impact of $\Delta t$}
+			The next parameter we explore is the time step. This parameter is important as it controls the accuracy of the integration. The goal is to find the largest time step thata allows for accurate integration, as this will speed up the sampler while allowing it to accept proposals frequently.
+
+			The similarities associated to 3000 samples for the different time steps are presented in figure \ref{fig:dt-scan}.
 			\begin{figure}[htb]
 				\centering
 					\vspace{0em}
@@ -127,8 +164,13 @@
 					\caption{Similarity as a function of HMC time step for considered values of $\alpha$.}
 					\label{fig:dt-scan}
 			\end{figure}
-			\lipsum[1]
+			The first characteristic feature the two plots share is the monotonous behaviour of target-similarity and acceptance rate. Indeed, as mentionned before, by making $\Delta t$ grow, the simulation does not exactly leave the Hamiltonian invariant, and therefore makes the acceptance rate decrease. This in turn affects the similarity, as the obtained samples are less diverse and represent the target distribution less precisely.  
+			Looking more closely though, we notice the speed of decrease is really different : it is much quicker and of bigger scale for $\alpha=1000$ (we basically reach 0 for the acceptance rate when $\Delta t=6\times 10^{-2}$). This is due to the characteristic time being shorter, and therefore requiring finer resolution. Indeed, one can only go up to $\Delta t=3\times 10^{-2}$ before really suffering in terms of performance, while for $\alpha=10$ good performance is mantained in term of target similarity even when a single timestep of size $t$ is taken (look at the scale of the vertical axis). This makes sense since the obtained algorithm is still some sort of upgraded version of RWMC where the general direction of the step is choosen smartly and RWMC already performed well over quite a broad domain of step sizes.   
 			\subsection{Impact of Mass Scale}
+			We now turn to analysing the impact of the mass. We split this in terms of the mass scale and the mass symmetry. We do not consider the impact of off-diagonal terms as this would make the report too long. 
+
+			What we expect to see is that the mass scale will control the speed of the dynamics (by affecting the particle's inertia).
+			The similarities associated to 3000 samples for the different mass scales are presented in \ref{fig:mass-scan}.
 			\begin{figure}[htb]
 				\centering
 					\vspace{0em}
@@ -136,8 +178,12 @@
 					\caption{Similarity as a function of HMC mass scale for considered values of $\alpha$.}
 					\label{fig:mass-scan}
 			\end{figure}
-			\lipsum[1]
+			- In this case, both plots look qualitatively similar : both the acceptance rate and the similarity admit a global maxima at some value of the mass scale, and worsen on both sides of it. in both cases the acceptance rate reaches zero for a value of the order twice the optimal value.  
+			- bigger masses are better for alpha =1000
+			- reason for decrease on both end in terms of poor integration (citing GPT for stiff systems being harder)
+			- 
 			\subsection{Impact of Mass Symmetry}
+			What we expect to see is that mass symmetry will control the isotropy/anisotropy of the trajectories. Indeed, if masses are different, the particle will have different inertia in different directions, which will affect the shape of the trajectories : in some direction the particle will react quickly to forces, while in others it will be more inert. We try to gain insight into this with help of  \ref{fig:mass-sym}, in which the similarities associated to 3000 samples for both symmetric and asymmetric masses are represented.
 			\begin{figure}[htb]
 				\centering
 					\vspace{0em}
@@ -145,8 +191,17 @@
 					\caption{Similarity for HMC samplers with asymmetric and symmetric masses for $\alpha=1000$.}
 					\label{fig:mass-sym}
 			\end{figure}
-			\lipsum[1]
+			- A first look at the plot shows that the similarity is better for the symmetric mass case. This makes sense given the target distribution (and therefore potential landscape) is isotropic. We would expect this to change if the distribution was anisotropic. If the main axis of motion were to not be orthogonal, we would expect to find an advantage in properly choosing off-diagonal terms for the mass. 
+			- more precisely, in the anisotropic case it can be seen that the left and right areas of the distributions are sampled more than the top and bottom ones. This seems to be a consequence of the fact that in that example $m_1>m_2$, and therefore the particle's inertia is stronger along the horizontal axis than the vertical one. 
+			\subsection{Comment on interractions between parameters}
 		\subsection{Comparison and Sample-Size Evolution}
+		- finding global optimal choice of parameters without doing a grid-search (which is untractable in high dimensions), is not easy. This is due to interdependence of the parameters. Indeed .....
+		- in practice we looked for a way to find ``good enough'' parameters easily. The way we came up with was the following : 
+		....
+
+		....
+
+		Applying this method, it is interesting to compare the obtained results with those of the step-size-optimised RWMC 
 		\begin{figure}[htb]
 			\centering
 				\vspace{0em}
@@ -158,7 +213,6 @@
 	\section{US Birthweight Data}
 		\subsection{HMC Solution}
 		\subsection{RWMC Solution}
-	\section{(f)}
 	\section{Section ...}
 	\section{Conclusion}
 	\section*{Aknowledgements}

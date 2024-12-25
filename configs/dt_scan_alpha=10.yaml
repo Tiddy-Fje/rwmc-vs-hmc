@@ -1,6 +1,6 @@
 Sampler : 
   sampler_type : HMC
-  mass : [1.,1.]
+  mass : [1.2,1.2]
   t : 0.12
   dt : 
     - .01

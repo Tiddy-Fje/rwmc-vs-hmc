@@ -58,20 +58,27 @@ def fig_from_param( function, param, x_label ):
     plt.savefig( filename )
     print(f'{param} figure done !')
 
-
 fig_from_param( scan_main, 't_scan', '$t$' )
 fig_from_param( scan_main, 'dt_scan', r'$\Delta t$' )
 fig_from_param( scan_main, 'mass_scan', '$m=m_1=m_2$' )
 fig_from_param( scan_main, 'rwmc_scan', None )
 fig_from_param( nsample_main, 'nsamples_evolution', 'Number of samples' )
 
+
 param_fig, ax = plt.subplots(1, 2, figsize=(11, 4.5))
 param = 'mass_sym'
 comparison_main(f'{config_dir}{param}{yaml}', ax=ax)
 title0 = ax[0].get_title()
 title1 = ax[1].get_title()
-ax[0].set_title( r'$(m_1,m_2)\neq(m,m)$'+f'\n{title0}' )
-ax[1].set_title( f'$(m_1,m_2)=(m,m)$\n{title1}' )
+with open(f'{config_dir}{param}{yaml}', 'r') as file:
+    config = yaml.safe_load(file) 
+m1 = config['Case1']['mass']
+m2 = config['Case2']['mass']
+alpha = config['General']['alpha']
+m1_lab = f'(m_1,m_2)=({m1[0]:.2f},{m1[1]:.2f})'
+m2_lab = f'(m_1,m_2)=({m2[0]:.2f},{m2[1]:.2f})'
+ax[0].set_title( r'$'+m1_lab+r'$'+f'\n{title0}' )
+ax[1].set_title( r'$'+m2_lab+r'$'+f'\n{title1}' )
 plt.savefig( f'{fig_dir}{param}{png}' )
 print(f'{param} figure done !')
 

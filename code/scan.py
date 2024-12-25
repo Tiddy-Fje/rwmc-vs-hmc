@@ -29,7 +29,6 @@ def main(config_file, ax=None):
     if type(param) is list:
         params = [params[i][0] for i in range(len(params))]
 
-    # inspired from an example in the matplotlib documentation
     flag = False
 
     ax1 = ax
@@ -46,6 +45,7 @@ def main(config_file, ax=None):
     ax1.set_ylabel('Target similarity')
     ax1.tick_params( axis='y', labelcolor=color )
 
+    # inspired from an example in the matplotlib documentation
     ax2 = ax1.twinx()
     color = 'tab:red'
     ax2.plot( params, accept_rate, color=color )
