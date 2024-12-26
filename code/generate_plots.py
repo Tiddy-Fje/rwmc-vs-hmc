@@ -58,11 +58,12 @@ def fig_from_param( function, param, x_label ):
     plt.savefig( filename )
     print(f'{param} figure done !')
 
+
 fig_from_param( scan_main, 't_scan', '$t$' )
 fig_from_param( scan_main, 'dt_scan', r'$\Delta t$' )
-fig_from_param( scan_main, 'mass_scan', '$m=m_1=m_2$' )
 fig_from_param( scan_main, 'rwmc_scan', None )
 fig_from_param( nsample_main, 'nsamples_evolution', 'Number of samples' )
+fig_from_param( scan_main, 'mass_scan', '$m=m_1=m_2$' )
 
 
 param_fig, ax = plt.subplots(1, 2, figsize=(11, 4.5))

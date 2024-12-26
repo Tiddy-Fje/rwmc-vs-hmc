@@ -1,6 +1,6 @@
 HMC : 
   sampler_type : HMC
-  mass : [.85,.85]
+  mass : [.55,.55]
   t : .09
   dt : .09
 
