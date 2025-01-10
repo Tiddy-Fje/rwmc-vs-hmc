@@ -143,7 +143,7 @@ class HamiltonianMCMC(MCMCSampler):
             proposed_momentum += 0.5 * self.dt * self.unnorm_logdensity_grad(proposed_state)
             proposed_state += self.dt * proposed_momentum / self.mass
             proposed_momentum += 0.5 * self.dt * self.unnorm_logdensity_grad(proposed_state)
-            self.n_evaluations += 1
+            self.n_evaluations += 2
 
         current_energy = -self.unnorm_logdensity(current_state) + 0.5 * np.dot(momentum/self.mass,momentum)
         proposed_energy = -self.unnorm_logdensity(proposed_state) + 0.5 * np.dot(proposed_momentum/self.mass,proposed_momentum)

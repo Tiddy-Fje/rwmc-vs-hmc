@@ -42,7 +42,7 @@ plt.savefig('../figures/violin_hamiltonian_regression.png', bbox_inches='tight')
 mean_HMC = np.mean(result[0,:,:], axis=0)
 
 sample_hamiltonian = RandomWalkMCMC(3, np.zeros(X.shape[1]), logdensity, 200, 0.1)
-result_RW = sample_hamiltonian.sample(1,20000)
+result_RW = sample_hamiltonian.sample(1,35000)
 mean_RW = np.mean(result_RW[0,:,:], axis=0)
 
 clf = LogisticRegression().fit(X[:,:-1], y)
