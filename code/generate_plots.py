@@ -45,8 +45,9 @@ def plot_U_pot( alpha ):
     plt.savefig(f'../figures/U_pot_alpha={alpha}.png')
     return
 
-def fig_from_param( function, param, x_label ): 
-    param_fig, ax = plt.subplots(1, 2, figsize=(12, 5))
+def fig_from_param( function, param, x_label, ax=None ): 
+    if ax is None:
+        param_fig, ax = plt.subplots(1, 2, figsize=(12, 5))
     function(f'{config_dir}{param}_alpha=10{yaml_}', ax=ax[0])
     function(f'{config_dir}{param}{yaml_}', ax=ax[1])
     if x_label != None:
@@ -54,8 +55,9 @@ def fig_from_param( function, param, x_label ):
         ax[1].set_xlabel(x_label)
     ax[0].set_title(r'$\alpha$ = 10')
     ax[1].set_title(r'$\alpha$ = 1000')
-    filename = f'{fig_dir}{param}{png}'
-    plt.savefig( filename )
+    if ax is None:
+        filename = f'{fig_dir}{param}{png}'
+        plt.savefig( filename )
     print(f'{param} figure done !')
 
 
@@ -63,8 +65,13 @@ fig_from_param( scan_main, 't_scan', '$t$' )
 fig_from_param( scan_main, 'dt_scan', r'$\Delta t$' )
 fig_from_param( scan_main, 'rwmc_scan', None )
 fig_from_param( nsample_main, 'nsamples_evolution', 'Number of samples' )
-fig_from_param( scan_main, 'mass_scan', '$m=m_1=m_2$' )
-
+param_fig, ax = plt.subplots(1, 2, figsize=(12, 5))
+param = 'mass_scan'
+fig_from_param( scan_main, param, '$m=m_1=m_2$', ax=ax )
+ax[0].set_xscale('log')
+ax[1].set_xscale('log')
+filename = f'{fig_dir}{param}{png}'
+plt.savefig( filename )
 
 param_fig, ax = plt.subplots(1, 2, figsize=(11, 4.5))
 param = 'mass_sym'
