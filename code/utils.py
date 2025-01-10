@@ -42,10 +42,13 @@ def preprocess_data():
     df['age'] = (df['age'] - df['age'].mean())/df['age'].std()
     df['weight'] = (df['lwt'] - df['lwt'].mean())/df['lwt'].std()
 
-    df['african/american'] = df['race'].apply(lambda x: 1 if x == 2 else 0)
-    df['other race'] = df['race'].apply(lambda x: 1 if x == 3 else 0)
-    df['first physician visit'] = df['ftv'].apply(lambda x: 1 if x > 0 else 0)
-    df['more physician visits'] = df['ftv'].apply(lambda x: 1 if x > 1 else 0)
+    df['african/american'] = df['race'].apply(lambda x: 1 if x == 2 else -1)
+    df['other race'] = df['race'].apply(lambda x: 1 if x == 3 else -1)
+    df['first physician visit'] = df['ftv'].apply(lambda x: 1 if x > 0 else -1)
+    df['more physician visits'] = df['ftv'].apply(lambda x: 1 if x > 1 else -1)
+
+    for key in ['smoke', 'premature birth', 'hypertension', 'uterine irritability']:
+        df[key] = df[key].apply(lambda x: 1 if x == 1 else -1)
 
     df['intercept'] = 1
 
@@ -54,11 +57,9 @@ def preprocess_data():
     df = df[keys]
     keys.remove('low')
 
-    log_odds_dic = {key: np.exp(1) for key in keys}
-    #log_odds_dic['premature birth'] *= 5.
-    #log_odds_dic['weight'] *= 5.
+    log_odds_dic = {key: np.exp(1.5) for key in keys}
     log_odds = [log_odds_dic[key] for key in keys]
-    sigmas = np.log( np.array(log_odds) )*10
+    sigmas = np.log( np.array(log_odds) )
     
     X = np.array(df.drop(columns = ['low']))
     y = np.array(df['low'])
