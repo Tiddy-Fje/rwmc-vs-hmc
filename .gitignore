@@ -9,7 +9,7 @@
 *.out
 *.synctex.gz
 *.run.xml
-/report/report.pdf
+report/report.pdf
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
