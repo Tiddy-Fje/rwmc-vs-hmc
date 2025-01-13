@@ -57,8 +57,8 @@ def main(config_file, ax=None):
     ax[1].set_xlabel('$q_1$')
     ax[0].set_ylabel('$q_2$')
     ax[1].set_ylabel('$q_2$')
-    ax[0].set_title(f'Similarity : {sim1:.2f} pm {2*sim_std1:.2f}')
-    ax[1].set_title(f'Similarity : {sim2:.2f} pm {2*sim_std2:.2f}')
+    ax[0].set_title(f'Similarity : {sim1:.2f} pm {2*sim_std1:.2e}')
+    ax[1].set_title(f'Similarity : {sim2:.2f} pm {2*sim_std2:.2e}')
 
 
     if flag:

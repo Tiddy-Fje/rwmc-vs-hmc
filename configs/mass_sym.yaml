@@ -1,16 +1,16 @@
 Case1 : 
   sampler_type : HMC
   title : Asymmetric mass
-  mass : [1.2,.6]
+  mass : [5.,.85]
   t : .21
-  dt : 0.03
+  dt : 0.01
 
 Case2 : 
   sampler_type : HMC
   title : Symmetric mass
   mass : [.85,.85]
-  t : .09
-  dt : 0.03
+  t : .21
+  dt : 0.01
 
 General :
   seed : 1234

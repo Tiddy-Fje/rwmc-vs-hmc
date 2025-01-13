@@ -141,12 +141,16 @@
 					\caption{Similarity as a function of HMC mass scale for considered values of $\alpha$.}
 					\label{fig:mass-scan}
 			\end{figure}
-			In this case, both plots look qualitatively similar : both the acceptance rate and the similarity admit a global maxima at some value of the mass scale, and worsen on both sides of it. In both cases the acceptance rate stays high however, probably because $\Delta t$ was taken small enough. The decrease in performance is therefore probably due to the fact that the particle explores less well the space. We can easily make sense of it for higher values of the mass, as the particle will be more inert and therefore less likely to explore the space. For lower values of the mass, the particle will be more reactive to forces, so the decrease in exploration could at first seem counter-intuitive. We could however immagine that if the mass is too low, the particle will be more likely to oscillate around the minima, and so not explore well other parts of the domain.
+			In this case, both plots look qualitatively similar : the similarity admits a global maxima at some value of the mass scale, and worsen on both sides of it. The acceptance rate on the other hand stays really close to $1$, probably due to the $\Delta t$ being quite generosly choosen. The decrease in performance is therefore due to the fact that the particle explores less well the space. We can easily make sense of it for higher values of the mass, as the particle will be more inert and therefore less likely to explore the space. For lower values of the mass, the particle will be more reactive to forces, so the decrease in exploration can seem counter-intuitive. We could however immagine that if the mass is too low, the particle will be more likely to oscillate around the minima, and so not explore well other parts of the domain.
 			
-			There are a couple of difference worth noting between the $\alpha=10$ and $\alpha=1000$ cases. The first is that the second case has its peak around a higher value of the mass. This is consistent with the fact that the forces are stronger, and therefore it requires more inertia to explore the space. The second difference is that the $\alpha=1000$ case seems to suffer more from the mass scale being too large.
+			There are a couple of difference worth noting between the $\alpha=10$ and $\alpha=1000$ cases. The first is that the second case has its peak around a higher value of the mass. This is consistent with the fact that the forces are stronger, and therefore it requires more inertia to explore well the space (when integration time is fixed). 
+			% (ASK AUDE IF MAKES SENSE). 
+			The second difference is that the $\alpha=1000$ case seems to suffer more from the mass scale being too large. The reason is probably similar, given in addition that the characteristic time is shorter for this case (and therefore the same absolute change in travelled distance is more important).
 			\subsection{Impact of Mass Symmetry}
-			THIS NEEDS TO BE ADAPTED (RESULTS CHANGED RECENTLY)
-			What we expect to see is that mass symmetry will control the isotropy/anisotropy of the trajectories. Indeed, if masses are different, the particle will have different inertia in different directions, which will affect the shape of the trajectories. In some direction the particle will react quickly to forces, while in others it will be more inert. We try to gain insight into this with help of  \ref{fig:mass-sym}, in which the similarities associated to 3000 samples for both symmetric and asymmetric masses are represented.
+			What we expect to see is that mass symmetry will control the isotropy/anisotropy of inertia. Indeed, if masses are different, the particle will have different inertia in different directions, which will affect the shape of the trajectories. In some direction the particle will react more quickly to forces, while in the other it will be more inert.
+			In our case, the target distribution (and therefore potential landscape) is isotropic. We would therefore expect that better results are obtained with symmetric masses. If the main axis of motion were not to be orthogonal, we would even expect to find an advantage in properly choosing (non-zero) off-diagonal terms too. 
+
+			We tried to gain insight into this with help of \ref{fig:mass-sym}, in which the similarities associated to 3000 samples for both symmetric and asymmetric masses are represented.
 			\begin{figure}[htb]
 				\centering
 					\vspace{0em}
@@ -154,8 +158,7 @@
 					\caption{Similarity for HMC samplers with asymmetric and symmetric masses for $\alpha=1000$.}
 					\label{fig:mass-sym}
 			\end{figure}
-			A first look at the plot shows that the similarity is better for the symmetric mass case. This makes sense given the target distribution (and therefore potential landscape) is isotropic. We would expect this to change if the distribution was anisotropic. If the main axis of motion were not to be orthogonal, we would expect to find an advantage in properly choosing (non-zero) off-diagonal terms too. 
-			
+			A first look at the plot shows that the similarity is slightly better for the symmetric mass case. 
 			More precisely in our case, the plot associated to anisotropic masses reveils that left and right areas of the distributions are sampled more than the top and bottom ones. This seems to be a consequence of the fact that in that example $m_1>m_2$ (as the particle's inertia is stronger along the horizontal axis). 
 			\subsubsection{Impact of Integration Time}
 			The next parameter we explore is integration time. For this parameter, we expect the optimal value to be the one that allows the sampler to explore the whole space, without being excessively long (as it would slow down sampling).
