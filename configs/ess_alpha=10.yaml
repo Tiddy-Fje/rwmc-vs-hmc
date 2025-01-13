@@ -1,0 +1,19 @@
+Case1 : 
+  sampler_type : RWMC
+  title : RWMC
+  step_size : [.085,.085]
+  n_samples : 69100
+
+Case2 : 
+  sampler_type : HMC
+  title : HMC
+  mass : [.55,.55]
+  t : 0.09
+  dt : 0.09
+  n_samples : 23100
+
+General :
+  seed : 1234
+  initial_condition : [0.,0.]
+  burn_in : 100
+  n_chains : 5

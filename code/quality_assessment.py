@@ -11,12 +11,14 @@ def main(config_file, plot_potential):
         config = yaml.safe_load(file) 
     
     unnorm_logdensity, unnorm_logdensity_grad = test_example(100)
+    config['General']['n_samples'] = config['Case1']['n_samples']
     case1_samples = sample_from_info( config['Case1'], config['General'], unnorm_logdensity, unnorm_logdensity_grad )
+    config['General']['n_samples'] = config['Case2']['n_samples']
     case2_samples = sample_from_info( config['Case2'], config['General'], unnorm_logdensity, unnorm_logdensity_grad )
     
-    plot_acf( case1_samples, case2_samples, config['Case1']['title'], config['Case2']['title'] )
+    plot_acf( case1_samples, case2_samples, config['Case1']['title'], config['Case2']['title'], filename='acf_alpha=1000')
     plot_eff_sample_size( case1_samples, case2_samples, config['Case1']['title'], \
-            config['Case2']['title'], config['Case2']['dt'], config['Case2']['t'] )
+            config['Case2']['title'], config['Case2']['dt'], config['Case2']['t'], filename='eff_sample_size_alpha=1000')
     return
 
 if __name__ == '__main__':

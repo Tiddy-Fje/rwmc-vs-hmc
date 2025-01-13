@@ -1,18 +1,19 @@
 Case1 : 
   sampler_type : RWMC
   title : RWMC
-  step_size : [1.,1.]
+  step_size : [.075,.075]
+  n_samples : 70100
 
 Case2 : 
   sampler_type : HMC
   title : HMC
-  mass : [1.,1.]
-  t : 0.5
-  dt : 0.1
+  mass : [.85,.85]
+  t : 0.09
+  dt : 0.03
+  n_samples : 10100
 
 General :
   seed : 1234
   initial_condition : [0.,0.]
   burn_in : 100
-  n_chains : 10
-  n_samples : 10000
+  n_chains : 5

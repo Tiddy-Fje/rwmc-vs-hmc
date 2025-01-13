@@ -1,4 +1,4 @@
-from utils import test_example, plot_acf, preprocess_data, logposterior, plot_eff_sample_size
+from utils import test_example, plot_acf, preprocess_data, logposterior, plot_eff_sample_size, plot_eff_sample_size
 from sampler import RandomWalkMCMC, HamiltonianMCMC
 import matplotlib.pyplot as plt
 import numpy as np
@@ -28,7 +28,7 @@ plt.grid()
 plt.savefig('../figures/traceplot_hamiltonian_regression.png', bbox_inches='tight')
 
 sample_hamiltonian = HamiltonianMCMC(0, np.zeros(X.shape[1]), logdensity, 200, grad_logdensity, np.ones(X.shape[1])*mass, leapfrog_time, dt)
-result = sample_hamiltonian.sample(1,5000)
+result = sample_hamiltonian.sample(1,5200)
 
 fig = plt.figure(figsize=(10,4))
 df = pd.melt(pd.DataFrame(result[0,:,:], columns=keys), var_name='covariates', value_name='samples')
@@ -41,8 +41,8 @@ plt.savefig('../figures/violin_hamiltonian_regression.png', bbox_inches='tight')
 
 mean_HMC = np.mean(result[0,:,:], axis=0)
 
-sample_hamiltonian = RandomWalkMCMC(3, np.zeros(X.shape[1]), logdensity, 200, 0.1)
-result_RW = sample_hamiltonian.sample(1,35000)
+sample_RW = RandomWalkMCMC(3, np.zeros(X.shape[1]), logdensity, 200, 0.1)
+result_RW = sample_RW.sample(1,35200)
 mean_RW = np.mean(result_RW[0,:,:], axis=0)
 
 clf = LogisticRegression().fit(X[:,:-1], y)
@@ -67,3 +67,8 @@ for attribute, measurement in results.items():
 plt.xticks(ticks=x, labels=keys, rotation=45)
 plt.legend()
 plt.savefig('../figures/regression_comparison.png', bbox_inches='tight')
+plt.show()
+
+result = sample_hamiltonian.sample(10,5200)
+result_RW = sample_RW.sample(10,35200)
+plot_eff_sample_size(result, result_RW, 'HMC', 'RWMC', 0.02, 0.06, filename='eff_sample_size_regression')
