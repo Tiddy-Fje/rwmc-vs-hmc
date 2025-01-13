@@ -194,7 +194,9 @@
 				\item with the new mass matrix, select the locally optimal integration time (shortest one preserving good enough mixing),
 				\item finally select the locally optimal $\Delta t$ (the biggest for which the acceptance rate is good enough).
 			\end{enumerate}
-			We do not expect this approximate tuning of the parameters to be a problem given that alternatives like RWMC breakdown in high dimensions. A locally optimal selection of HMC parameters will probably still lead to a much more efficient sampler.   
+			We do not expect this approximate tuning of the parameters to be a problem given that alternatives like RWMC breakdown in high dimensions. A locally optimal selection of HMC parameters will probably still lead to a much more efficient sampler.
+
+			Following the procedure described above, the locally optimal  HMC parameters for the $\alpha=10$ case were found to be $m_1=m_2=0.55$, $t=dt=0.09$, and for the $\alpha=1000$ case $m_1=m_2=0.85$, $t=0.09$, $dt=0.03$. Refering to \ref{fig:rwmc-scan}, the optimal step size for the RWMC algorithm is around $0.085$ when $\alpha=10$ and $0.075$ when $\alpha=1000$. In the next section, these parameters will be used to compare the performance of the optimised HMC and RWMC algorithms.
 		\subsection{RWMC and HMC Comparison}
 		\subsubsection{Target-Similarity as a Function of Sample-Size}\label{sec:target-similarity}
 		To determine which algorithm is best to use for the studied 2D example, it is interesting to compare the results obtained with optimised versions of the RWMC and HMC algorithms as a function of sample size (matching the number of function evaluations). We do this in \ref{fig:nsamples-evolution}.
@@ -208,7 +210,29 @@
 		\end{figure}
 		In general, the same qualitative behaviour is observed for all algorithms : the similarity quickly increases at the start but then sees deminishing returns characteristic of concave functions. In both cases RWMC outperforms HMC in terms of similarity. The difference is slightly larger in the $\alpha=10$ case, again, due to how simple the target function is. For $\alpha=1000$, the computational overhead (of a factor 7) is for a big part compensated. We can easily imagine this trend continuing and accentuating with the dimension of the distribution, and therefore HMC vastly outperforming RWMC in these settings.
 		\subsubsection{Effective Sample-Size}
-		....
+		\begin{figure}[htb]
+			\begin{subfigure}[b]{\textwidth}
+				\centering
+				\includegraphics[width=0.45\textwidth]{acf_alpha=10}
+				\includegraphics[width=0.45\textwidth]{acf_alpha=1000}
+				\caption*{$\mathrm{(a)}$}
+			\end{subfigure}
+				\begin{subfigure}[b]{\textwidth}
+					\centering
+					\includegraphics[width=0.45\textwidth]{eff_sample_size_alpha=10}
+					\includegraphics[width=0.45\textwidth]{eff_sample_size_alpha=1000}
+					\caption*{$\mathrm{(b)}$}
+				\end{subfigure}
+				\caption{Autocorrelation plots and effective sample-size for RWMC and HMC samplers and considered values of $\alpha$. Both $q_1$ and $q_2$ are shown on each plot, and the results are averaged over 5 chains.}
+				\label{fig:acf-ess}
+		\end{figure}
+		The main motivation behind HMC is to decrease the autocorrelation of the samples by making step proposals that are more likely to be accepted, whilst still being distant enough to explore the state space. This effect is expected to be important when the target distribution is difficult to sample from, and a random walk is unable to explore the space efficiently.
+		This can be observed in the autocorrelation plots of \ref{fig:acf-ess}a. In both cases $\alpha=10$ and $\alpha=1000$, the autocorrelation of the HMC samples decreses faster than that of the RWMC samples. As expected, the effect is subtle for $\alpha=10$, as the RWMC samples are already quite decorrelated, and more pronounced for $\alpha=1000$.
+
+		On the other hand, HMC requires more evaluations of the target function to generate a sample, as it needs to compute the gradient of the potential energy twice at each step of Verlet's method, in addition to the evaluation of the proposal step. This computation time could be used to generate more samples with RWMC, which would increase the effective sample size (number of independent samples that would give the same variance as the autocorrelated samples) and therefore the similarity of the samples to the target distribution.
+		To determine whether the decrease in autocorrelation is worth the increase in computation time, we present the effective sample size of the RWMC and HMC samples in \ref{fig:acf-ess}b as a function of the number of evaluations of the target function (and its gradient).
+		Consistently with the similarity results presented in \ref{fig:nsamples-evolution}, the effective sample size of the RWMC samples grows faster than that of the HMC samples, for both values of $\alpha$. Therefore in this case, the RWMC algorithm is more efficient than the HMC algorithm.
+		The difference in performance is smaller for $\alpha=1000$, as the target function is more difficult to sample from.
 	\section{US Birthweight Data}
 	In this section, we use HMC to perform a logistic regression on the US Birthweight data [cite]. The data consists of $n=189$ observations of 8 variables: the mother's age, weight, race (white, African-American, other), smoking status, hypertension status, presence of uterine irritability, the number of physician visits during the first trimester, the existence of past premature births, and the low birth weight status of the child. We are interested in predicting whether a child will have low birth weight based on the following covariates (refering to the mother):
 	\begin{itemize}
@@ -239,18 +263,18 @@
 		\begin{figure}[h!]
 			\centering
 				\vspace{0em}
-				\includegraphics[width=0.9\textwidth]
+				\includegraphics[width=0.8\textwidth]
 				{traceplot_hamiltonian_regression}
 				\caption{Traceplot of the regression coefficients and intercept for the US Birthweight data, obtained using HMC with parameters $dt=0.02$, $T=0.6$, and $m=0.05$.}
 				\label{fig:traceplot-hamiltonian-regression}
 		\end{figure}
-		Fig.~\ref{fig:traceplot-hamiltonian-regression} shows the traceplot of the HMC sampling from \ref{eq:log-likelihood} for each covariate of the model. We observe that the chains converge to the stationary distribution after a burn-in period of less than 100 steps. The histograms of the regression coefficients and intercept are shown in Fig.~\ref{fig:violin-hamiltonian-regression}. All covariates look to be approximately gaussian distributed, with the past premature births and hypertension status being the most influential factors.
+		~\ref{fig:traceplot-hamiltonian-regression} shows the traceplot of the HMC sampling from \ref{eq:log-likelihood} for each covariate of the model. We observe that the chains converge to the stationary distribution after a burn-in period of less than 100 steps. The histograms of the regression coefficients and intercept are shown in ~\ref{fig:violin-hamiltonian-regression}. All covariates look to be approximately gaussian distributed, with the past premature births and hypertension status being the most influential factors.
 		\begin{figure}[h!]
 			\centering
 				\vspace{0em}
 				\includegraphics[width=0.9\textwidth]
 				{violin_hamiltonian_regression}
-				\caption{Violin plot of the regression coefficients and intercept for the US Birthweight data, obtained using HMC with parameters $dt=0.02$, $T=0.6$, and $m=0.05$.The histograms are taken over 4900 samples of the chains, after a burn-in period of 100 steps.}
+				\caption{Violin plot of the regression coefficients and intercept for the US Birthweight data, obtained using HMC with parameters $dt=0.02$, $t=0.6$, and $m=0.05$.The histograms are taken over 4900 samples of the chains, after a burn-in period of 100 steps.}
 				\label{fig:violin-hamiltonian-regression}
 		\end{figure}
 		\subsection{Coefficients Comparison}
@@ -262,8 +286,18 @@
 				\caption{Comparison of the regression coefficients and intercept for the US Birthweight data, obtained using HMC and RWMC.}
 				\label{fig:regression-comparison}
 		\end{figure}
-		We consider the task of estimating the expectation of the regression coefficients and intercept from HMC sampling of the posterior distribution, and we compare it to the same results obtained using RWMC. To evaluate the accuracy of the estimates, we use the results of a standard logistic regression procedure performed using limited-memory BFGS optimization (this was done using the LogisticRegression function from the scikit-learn library). This optimization process aims to find the argmax of the log-likelihood function, not the mean. However, it is shown on Fig.~\ref{fig:violin-hamiltonian-regression} that the distributions of the coefficients are approximately gaussian, in which case the mean and the argmax are the same. The results are shown in Fig.~\ref{fig:regression-comparison}. The mean over the HMC and RWMC distributions are taken over chains lengths matching the number of evaluations of the log-likelihood function and its gradient (5000 steps for HMC and 35000 steps for RWMC). Both the HMC and RWMC estimates appears to be very close to the BFGS estimates, showing that both algorithms are able to accurately estimate the regression coefficients and intercept.
+		\begin{figure}[htb]
+			\centering
+				\vspace{0em}
+				\includegraphics[width=0.6\textwidth]
+				{eff_sample_size_regression}
+				\caption{Effective sample size for the covariates of the regression model \ref{eq:log-likelihood}, sampled using HMC and RWMC. Each covariate is shown separately, and the results are averaged over 10 chains.}
+				\label{fig:ess-regression}
+		\end{figure}
+		We consider the task of estimating the expectation of the regression coefficients and intercept from HMC sampling of the posterior distribution, and we compare it to the same results obtained using RWMC. To evaluate the accuracy of the estimates, we use the results of a standard logistic regression procedure performed using limited-memory BFGS optimization (this was done using the LogisticRegression function from the scikit-learn library). This optimization process aims to find the argmax of the log-likelihood function, not the mean. However, it is shown on ~\ref{fig:violin-hamiltonian-regression} that the distributions of the coefficients are approximately gaussian, in which case the mean and the argmax are the same. The results are shown in ~\ref{fig:regression-comparison}. The mean over the HMC and RWMC distributions are taken over chains lengths matching the number of evaluations of the log-likelihood function and its gradient (5000 steps for HMC and 35000 steps for RWMC). Both the HMC and RWMC estimates appears to be very close to the BFGS estimates, showing that both algorithms are able to accurately estimate the regression coefficients and intercept.
 		Nonetheless, we observe that the HMC estimates are overall slightly closer to the BFGS than the RWMC ones, hence HMC outperforms RWMC in this case. This is consistent with the results obtained in section \ref{sec:target-similarity}, where HMC was shown to perform comparatively better in terms of target similarity for more complex target distributions.
+
+		To investigate this observation further, we compute the effective sample size of the regression coefficients and intercept for both HMC and RWMC. The results are shown in ~\ref{fig:ess-regression}. We observe that the effective sample size of the HMC samples consistently grow at a faster rate than that of the RWMC samples. Therefore in this setting, the target distribution is complex enough that RWMC has difficulty exploring the state space efficiently. This is also illustrated by the low acceptance rate of the RWMC sampler, which is around $0.4$, compared to 0.97 for the HMC sampler. The additionnal computational cost of the HMC sampler is in this case overcome by its quicker autocorrelation decay, making it more efficient than RWMC.
 			
 	\section{Conclusion}
 	\section*{Aknowledgements}
