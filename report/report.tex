@@ -93,15 +93,9 @@
 			If the dynamics is discretised with the Velocity Verlet algorithm, the volume in phase space is preserved up to a small error, which is why the algorithm is used in practice [cite wikipedia].
 	\section{Exploring a 2D example}
 		\subsection{Context}
-		In this section we explore the performance of the presented algorithms on a 2D example. The target distribution is taken as $f_1(q_1,q_2)=e^{-\alpha(q_1^2+q_2^2-0.25)^2}$, with $\alpha>0$ a parameter. This unormalised density is represented in figure \ref{fig:alpha-density} for two different values of $\alpha$.
-        \begin{figure}[htb]
-            \centering
-                \vspace{0em}
-                \includegraphics[width=0.9\textwidth]{alpha_density}
-                \caption{Density considered in this section for two different values of $\alpha$.}
-                \label{fig:alpha-density}
-        \end{figure}
-		As it can be seen, the density has the shape of a doughnot and $\alpha$ controls its thickness. We expect the $\alpha=1000$ case to be more difficult to sample from than the $\alpha=10$ case, as the density is more localised.
+		In this section we explore the performance of the presented algorithms on a 2D example. The target distribution is taken as $f_1(q_1,q_2)=e^{-\alpha(q_1^2+q_2^2-0.25)^2}$, with $\alpha>0$ a parameter. The target distribution therefore is shaped as a doughnot and $\alpha$ controls its thickness. 
+		
+		To make the study concise, we limit our analysis to two values of the parameter $\alpha$. To make comparisons interesting between these two values, we take these as being $\alpha =10$ and $\alpha=1000$. Indeed we expect the $\alpha=1000$ case to be more difficult to sample from than the $\alpha=10$ case, due to the strenght of localisation.
 		\subsection{RWMC Solution}
 			As seen previously, the RWMC algorithm only depends on the step size. We can therefore easily find the best RWMC sampler version by exploring the impact of the step size on the performance. 
 			
@@ -162,15 +156,17 @@
 			More precisely in our case, the plot associated to anisotropic masses reveils that left and right areas of the distributions are sampled more than the top and bottom ones. This seems to be a consequence of the fact that in that example $m_1>m_2$ (as the particle's inertia is stronger along the horizontal axis). 
 			\subsubsection{Impact of Integration Time}
 			The next parameter we explore is integration time. For this parameter, we expect the optimal value to be the one that allows the sampler to explore the whole space, without being excessively long (as it would slow down sampling).
-			The similarities associated to 3000 samples for the different integration times are presented in figure \ref{fig:t-scan}.
-			\begin{figure}[htb]
-				\centering
-					\vspace{0em}
-					\includegraphics[width=0.95\textwidth]{t_scan}
-					\caption{Similarity as a function of HMC integration time for considered values of $\alpha$.}
-					\label{fig:t-scan}
-			\end{figure}
-			From a qualitative point of view, the behaviour is the same for both settings : similarity increases as a function of $t$ untill a plateau around $t=9\times 10^{-2}$ is reached. Looking more closely, it seems that the curve is sligthly more noisy for the $\alpha=1000$ case.
+			%The similarities associated to 3000 samples for the different integration times are presented in figure \ref{fig:t-scan}.
+			%\begin{figure}[htb]
+			%	\centering
+			%		\vspace{0em}
+			%		\includegraphics[width=0.95\textwidth]{t_scan}
+			%		\caption{Similarity as a function of HMC integration time for considered values of $\alpha$.}
+			%		\label{fig:t-scan}
+			%\end{figure}
+			This was indeed the observed behaviour, though the plots are not reported due to space constraints, and there being little to comment on. 
+			In both $\alpha=10$ and $\alpha=1000$ cases similarity increases as a function of $t$ untill a plateau around $t=9\times 10^{-2}$ is reached. 
+			%Looking more closely, it seems that the curve is sligthly more noisy for the $\alpha=1000$ case.
 			%Curiously, we observe a steady decrease in acceptance rate for the $\alpha=10$ case and something that looks like a dampt oscillation for the $\alpha=1000$ one. This could be due to the characteristic time of oscillation being of the same order as the time differences considered. 
 			\subsection{Impact of $\Delta t$}
 			We now turn to analysing the impact of the time step. This parameter is important as it controls the accuracy of the integration. The goal is to find the largest time step that allows for accurate integration, as this will speed up the sampler while allowing it to accept proposals frequently.
