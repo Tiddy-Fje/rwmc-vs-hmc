@@ -213,22 +213,22 @@
 				\includegraphics[width=0.45\textwidth]{acf_alpha=1000}
 				\caption*{$\mathrm{(a)}$}
 			\end{subfigure}
-				\begin{subfigure}[b]{\textwidth}
-					\centering
-					\includegraphics[width=0.45\textwidth]{eff_sample_size_alpha=10}
-					\includegraphics[width=0.45\textwidth]{eff_sample_size_alpha=1000}
-					\caption*{$\mathrm{(b)}$}
-				\end{subfigure}
-				\caption{Autocorrelation plots and effective sample-size for RWMC and HMC samplers and considered values of $\alpha$. Both $q_1$ and $q_2$ are shown on each plot, and the results are averaged over 5 chains.}
-				\label{fig:acf-ess}
+			\begin{subfigure}[b]{\textwidth}
+				\centering
+				\includegraphics[width=0.45\textwidth]{eff_sample_size_alpha=10}
+				\includegraphics[width=0.45\textwidth]{eff_sample_size_alpha=1000}
+				\caption*{$\mathrm{(b)}$}
+			\end{subfigure}
+			\caption{Autocorrelation plots and effective sample-size for RWMC and HMC samplers and considered values of $\alpha$. Both $q_1$ and $q_2$ are shown on each plot, and the results are averaged over 5 chains.}
+			\label{fig:acf-ess}
 		\end{figure}
-		The main motivation behind HMC is to decrease the autocorrelation of the samples by making step proposals that are more likely to be accepted, whilst still being distant enough to explore the state space. This effect is expected to be important when the target distribution is difficult to sample from, and a random walk is unable to explore the space efficiently.
+		The main motivation behind HMC is to decrease the autocorrelation of the samples by making step proposals that are more likely to be accepted, whilst still being distant enough to explore the state space (I WOULD HAVE PUT IT THE OTHER WAY AROUND MAYBE : BY TAKING MORE DISTANT STEPS, WHILST KEEPING THE PROBABILITY OF ACCEPTANCE HIGH). This effect is expected to be important when the target distribution is difficult to sample from, and a random walk is unable to explore the space efficiently.
 		This can be observed in the autocorrelation plots of \ref{fig:acf-ess}a. In both cases $\alpha=10$ and $\alpha=1000$, the autocorrelation of the HMC samples decreses faster than that of the RWMC samples. As expected, the effect is subtle for $\alpha=10$, as the RWMC samples are already quite decorrelated, and more pronounced for $\alpha=1000$.
 
 		On the other hand, HMC requires more evaluations of the target function to generate a sample, as it needs to compute the gradient of the potential energy twice at each step of Verlet's method, in addition to the evaluation of the proposal step. This computation time could be used to generate more samples with RWMC, which would increase the effective sample size (number of independent samples that would give the same variance as the autocorrelated samples) and therefore the similarity of the samples to the target distribution.
 		To determine whether the decrease in autocorrelation is worth the increase in computation time, we present the effective sample size of the RWMC and HMC samples in \ref{fig:acf-ess}b as a function of the number of evaluations of the target function (and its gradient).
 		Consistently with the similarity results presented in \ref{fig:nsamples-evolution}, the effective sample size of the RWMC samples grows faster than that of the HMC samples, for both values of $\alpha$. Therefore in this case, the RWMC algorithm is more efficient than the HMC algorithm.
-		The difference in performance is smaller for $\alpha=1000$, as the target function is more difficult to sample from.
+		The difference in performance is smaller for $\alpha=1000$, as the target function is more difficult to sample from. [I HAVE A TOUGH TIME SEEING THIS. MAYBE WE CAN SAY *SLIGHTLY* SMALLER ?]
 	\section{US Birthweight Data}
 	In this section, we use HMC to perform a logistic regression on the US Birthweight data [cite]. The data consists of $n=189$ observations of 8 variables: the mother's age, weight, race (white, African-American, other), smoking status, hypertension status, presence of uterine irritability, the number of physician visits during the first trimester, the existence of past premature births, and the low birth weight status of the child. We are interested in predicting whether a child will have low birth weight based on the following covariates (refering to the mother):
 	\begin{itemize}
@@ -249,9 +249,9 @@
 			\item Whether there were additional physician visits during the first trimester
 		\end{itemize}
 	\end{itemize}
-	The numerical covariates are normalized, such that they have mean 0 and standard deviation 1. The boolean covariates are encoded as -1 or 1. The target variable is the low birth weight status of the child, which is a boolean variable encoded as $0¨$ or $1$. We use a logistic regression model to predict the target variable based on the covariates with a Gaussian prior on the regression coefficients and intercept - $\mathcal{N}(0,\mathrm{diag}(\sigma^2_0, \ldots, \sigma^2_p))$, with $p=10$ the number of covariates. We choose to take $\sigma_i = 1$ for all $i$, as the target variable and all covariates are of the same order of magnitude and there is no reason to believe a priori that some covariates are more important than others. We use the following log-likelihood function, with $y\in \mathbb{R}^{n}$ the target variable, $X\in \mathbb{R}^{n\times (p+1)}$ the matrix of covariates, and $q\in \mathbb{R}^{p+1}$ the vector of regression coefficients and intercept:
+	The numerical covariates are normalized, such that they have mean 0 and standard deviation 1. The boolean covariates are encoded as -1 or 1. The target variable is the low birth weight status of the child, which is a boolean variable encoded as $0¨$ or $1$. We use a logistic regression model to predict the target variable based on the covariates with a Gaussian prior on the regression coefficients and intercept $\mathcal{N}(0,\mathrm{diag}(\sigma^2_0, \ldots, \sigma^2_p))$, with $p=10$ the number of covariates. We choose to take $\sigma_i = 1$ for all $i$, as the target variable and all covariates are of the same order of magnitude and there is no reason to believe a priori that some covariates are more [MAYBE ADD *MUCH* ?] important than others. We use the following log-likelihood function, with $y\in \mathbb{R}^{n}$ the target variable, $X\in \mathbb{R}^{n\times (p+1)}$ the matrix of covariates, and $q\in \mathbb{R}^{p+1}$ the vector of regression coefficients and intercept:
 	\begin{equation}
-		\log{f(q|y,X,\{\sigma^2_0,\ldots,\sigma^2_p\})} = q^T X^T(y-\mathbf{1}_n) - \mathbf{1}_n^T [\log(1+\exp(-x_i^T q))]_{n\times 1} - \frac{1}{2} \sum_{i=0}^p \frac{q_i^2}{\sigma^2_i},
+		\log{f(q|y,X,\{\sigma^2_0,\ldots,\sigma^2_p\})} = q^T X^T(y-\mathbf{1}_n) - \mathbf{1}_n^T [\log(1+\exp(-x_i^T q))]_{n\times 1} - \frac{1}{2} \sum_{i=0}^p \frac{q_i^2}{\sigma^2_i}.
 		\label{eq:log-likelihood}
 	\end{equation}
 	This distribution will be used as an unormalized version of the target distribution $\pi(q)$ to perform HMC.
@@ -290,11 +290,10 @@
 				\caption{Effective sample size for the covariates of the regression model \ref{eq:log-likelihood}, sampled using HMC and RWMC. Each covariate is shown separately, and the results are averaged over 10 chains.}
 				\label{fig:ess-regression}
 		\end{figure}
-		We consider the task of estimating the expectation of the regression coefficients and intercept from HMC sampling of the posterior distribution, and we compare it to the same results obtained using RWMC. To evaluate the accuracy of the estimates, we use the results of a standard logistic regression procedure performed using limited-memory BFGS optimization (this was done using the LogisticRegression function from the scikit-learn library). This optimization process aims to find the argmax of the log-likelihood function, not the mean. However, it is shown on ~\ref{fig:violin-hamiltonian-regression} that the distributions of the coefficients are approximately gaussian, in which case the mean and the argmax are the same. The results are shown in ~\ref{fig:regression-comparison}. The mean over the HMC and RWMC distributions are taken over chains lengths matching the number of evaluations of the log-likelihood function and its gradient (5000 steps for HMC and 35000 steps for RWMC). Both the HMC and RWMC estimates appears to be very close to the BFGS estimates, showing that both algorithms are able to accurately estimate the regression coefficients and intercept.
+		We consider the task of estimating the expectation of the regression coefficients and intercept from HMC sampling of the posterior distribution, and we compare it to the same results obtained using RWMC. To evaluate the accuracy of the estimates, we use the results of a standard logistic regression procedure performed using limited-memory BFGS optimization (this was done using the \texttt{LogisticRegression} function from the \texttt{scikit-learn} library). This optimization process aims to find the argmax of the log-likelihood function, not the mean. However, it is shown on ~\ref{fig:violin-hamiltonian-regression} that the distributions of the coefficients are approximately gaussian, in which case the mean and the argmax are the same. The results are shown in ~\ref{fig:regression-comparison}. The mean over the HMC and RWMC distributions are taken over chains lengths matching the number of evaluations of the log-likelihood function and its gradient (5000 steps for HMC and 35000 steps for RWMC). Both the HMC and RWMC estimates appears to be very close to the BFGS estimates, showing that both algorithms are able to accurately estimate the regression coefficients and intercept.
 		Nonetheless, we observe that the HMC estimates are overall slightly closer to the BFGS than the RWMC ones, hence HMC outperforms RWMC in this case. This is consistent with the results obtained in section \ref{sec:target-similarity}, where HMC was shown to perform comparatively better in terms of target similarity for more complex target distributions.
 
-		To investigate this observation further, we compute the effective sample size of the regression coefficients and intercept for both HMC and RWMC. The results are shown in ~\ref{fig:ess-regression}. We observe that the effective sample size of the HMC samples consistently grow at a faster rate than that of the RWMC samples. Therefore in this setting, the target distribution is complex enough that RWMC has difficulty exploring the state space efficiently. This is also illustrated by the low acceptance rate of the RWMC sampler, which is around $0.4$, compared to 0.97 for the HMC sampler. The additionnal computational cost of the HMC sampler is in this case overcome by its quicker autocorrelation decay, making it more efficient than RWMC.
-			
+		To investigate this observation further, we compute the effective sample size of the regression coefficients and intercept for both HMC and RWMC. The results are shown in ~\ref{fig:ess-regression}. We observe that the effective sample size of the HMC samples consistently grow at a faster rate than that of the RWMC samples. Therefore in this setting, the target distribution is complex enough that RWMC has difficulty exploring the state space efficiently. This is also illustrated by the low acceptance rate of the RWMC sampler, which is around $0.4$, compared to 0.97 for the HMC sampler. The additionnal computational cost of the HMC sampler is in this case overcome by its quicker autocorrelation decay, making it more efficient than RWMC. [MAYBE WE SHOULD BE CAREFUL IN USING COMPLEX INSTEAD OF HIGH DIMENSIONAL ?? JUST A THOUGH, WHAT'S YOUR OPINION ?]
 	\section{Conclusion}
 	\section*{Aknowledgements}
 	\newpage
