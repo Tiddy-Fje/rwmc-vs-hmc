@@ -62,9 +62,6 @@ def fig_from_param( function, param, x_label, ax=None ):
         plt.savefig( filename )
     print(f'{param} figure done !')
 
-fig_from_param( scan_main, 'mass_scan', '$m=m_1=m_2$' )
-fig_from_param( scan_main, 't_scan', '$t$' )
-fig_from_param( scan_main, 'dt_scan', r'$\Delta t$' )
 
 param_fig, ax = plt.subplots(1, 2, figsize=(11, 4.5))
 param = 'mass_sym'
@@ -83,19 +80,19 @@ ax[1].set_title( r'$'+m2_lab+r'$'+f'\n{title1}' )
 plt.savefig( f'{fig_dir}{param}{png}' )
 print(f'{param} figure done !')
 
-if False :
 
-    fig_from_param( scan_main, 'rwmc_scan', None )
-    fig_from_param( nsample_main, 'nsamples_evolution', 'Number of samples' )
+fig_from_param( scan_main, 'mass_scan', '$m=m_1=m_2$' )
+fig_from_param( scan_main, 't_scan', '$t$' )
+fig_from_param( scan_main, 'dt_scan', r'$\Delta t$' )
+fig_from_param( nsample_main, 'nsamples_evolution', 'Number of samples' )
+fig_from_param( scan_main, 'rwmc_scan', None )
 
-  
+plot_U_pot( 10 )
+plot_U_pot( 1000 )
 
-    plot_U_pot( 10 )
-    plot_U_pot( 1000 )
-
-    param_fig, ax = plt.subplots(1, 2, figsize=(11, 4.5))
-    _, __ = test_example( 10, ax=ax[0] )
-    _, __ = test_example( 1000, ax=ax[1] )
-    ax[0].set_title(r'$\alpha$ = 10')
-    ax[1].set_title(r'$\alpha$ = 1000')
-    plt.savefig(f'../figures/alpha_density.png')
+param_fig, ax = plt.subplots(1, 2, figsize=(11, 4.5))
+_, __ = test_example( 10, ax=ax[0] )
+_, __ = test_example( 1000, ax=ax[1] )
+ax[0].set_title(r'$\alpha$ = 10')
+ax[1].set_title(r'$\alpha$ = 1000')
+plt.savefig(f'../figures/alpha_density.png')

@@ -140,7 +140,8 @@ class HamiltonianMCMC(MCMCSampler):
         
         # integrate Hamiltonian dynamics using leapfrog
         for _ in range(self.num_steps):
-            proposed_momentum += 0.5 * self.dt * self.unnorm_logdensity_grad(proposed_state)
+            # we use : grad U = - grad log p
+            proposed_momentum += 0.5 * self.dt * self.unnorm_logdensity_grad(proposed_state) 
             proposed_state += self.dt * proposed_momentum / self.mass
             proposed_momentum += 0.5 * self.dt * self.unnorm_logdensity_grad(proposed_state)
             self.n_evaluations += 2

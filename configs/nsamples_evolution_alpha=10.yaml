@@ -1,12 +1,12 @@
 HMC : 
   sampler_type : HMC
-  mass : [.55,.55]
+  mass : 1.
   t : .09
   dt : .09
 
 RWMC : 
   sampler_type : RWMC
-  step_size : [0.085,0.085]
+  step_size : [0.075,0.075]
 
 General :
   seed : 1234
