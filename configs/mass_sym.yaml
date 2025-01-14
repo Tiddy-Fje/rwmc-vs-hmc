@@ -1,14 +1,14 @@
 Case1 : 
   sampler_type : HMC
   title : Asymmetric mass
-  mass : [5.,.85]
+  mass : [.25,2.5]
   t : .21
   dt : 0.01
 
 Case2 : 
   sampler_type : HMC
   title : Symmetric mass
-  mass : [.85,.85]
+  mass : [1.,1.]
   t : .21
   dt : 0.01
 
@@ -18,5 +18,5 @@ General :
   burn_in : 100
   n_chains : 10
   alpha : 1000
-  n_samples : 3000
+  n_samples : 2000
   fig_name : mass_sym

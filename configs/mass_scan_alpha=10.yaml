@@ -1,15 +1,15 @@
 Sampler : 
   sampler_type : HMC
-  t : .21 #.21
-  dt : .01 # 0.03
-  mass : [0.075, 0.15, 0.3, 0.425, 0.575, .75, 1.25, 2.5, 5., 10.]
+  t : .21 # 
+  dt : .01 # 
+  mass : [.02, .1, .25, 0.5, 1., 1.5, 2., 2.5]
 
 General :
   seed : 1234
   initial_condition : [0.5,0.]
   alpha : 10
   burn_in : 100
-  n_chains : 5
+  n_chains : 10
   n_samples : 3000
   fig_name : mass_scan
   save_fig : True

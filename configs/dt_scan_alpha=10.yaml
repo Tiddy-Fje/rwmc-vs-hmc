@@ -1,6 +1,6 @@
 Sampler : 
   sampler_type : HMC
-  mass : [.55,.55]
+  mass : 1.
   t : 0.12
   dt : 
     - .01
@@ -15,7 +15,7 @@ General :
   initial_condition : [0.5,0.]
   alpha : 10
   burn_in : 100
-  n_chains : 20
+  n_chains : 10
   n_samples : 3000
   fig_name : dt_scan
   save_fig : True

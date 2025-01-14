@@ -134,7 +134,7 @@ class HamiltonianMCMC(MCMCSampler):
         '''
         Proposes a new state using Hamiltonian dynamics.
         '''
-        momentum = self.mass * self.rng.normal(0, 1, size=current_state.shape)
+        momentum = np.sqrt(self.mass) * self.rng.normal(0, 1, size=current_state.shape)
         proposed_state = current_state.copy()
         proposed_momentum = momentum.copy()
         

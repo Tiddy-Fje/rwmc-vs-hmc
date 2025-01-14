@@ -1,6 +1,6 @@
 Sampler : 
   sampler_type : HMC
-  mass : [.55,.55]
+  mass : 1.
   dt : 0.01
   t : 
     - .03
@@ -8,9 +8,8 @@ Sampler :
     - .055
     - .07
     - .09
-    - .11
+    - .12
     - .15
-    - .21
 
 General :
   seed : 1234

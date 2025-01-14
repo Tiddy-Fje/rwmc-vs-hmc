@@ -122,29 +122,37 @@
 					\label{fig:U-pot-alpha=10}
 			\end{wrapfigure}
 			Before exploring the impact of the different parameters of the HMC algorithm, we first present the potential energy landscape associated to the algorithm for this specific problem. The landscape is presented in figure \ref{fig:U-pot-alpha=10}. 
-			The landscape has polar symmetry, meaning the trajectories will be some sort of isotropic oscillations. It has global minima at a radius of $\sqrt{0.25}=0.5$ away from the centre and a local maxima at the origin. The only difference in the landscape for $\alpha=1000$ w.r.t. the $\alpha=10$ one is the scale of the potential. This means that the $\alpha=1000$ will give rise to stronger potential forces, which translates the fact that the density is more localised. 
+			This landscape has polar symmetry, and has global minima at a radius of $\sqrt{0.25}=0.5$ away from the centre and a local maxima at the origin. 
+
+			The only difference in the landscape for $\alpha=1000$ w.r.t. $\alpha=10$ is the scale of the potential. This means that the $\alpha=1000$ will give rise to stronger potential forces, which translates the fact that the density is more localised. 
+
+			The first parameter we explore is the mass. We split this in terms of the mass scale and the mass isotropy. We do not consider the impact of off-diagonal terms as this would make the report too long and was not suggested in the statement.
 			\subsection{Impact of Mass Scale}
-			The first parameter we explore is that of the mass. We split this in terms of the mass scale and the mass symmetry. We do not consider the impact of off-diagonal terms as this would make the report too long and was not suggested in the statement. 
-
-			What we expect to see is that the mass scale will control the speed of the dynamics (by affecting the particle's inertia).
-			The similarities associated to 3000 samples for the different mass scales are presented in \ref{fig:mass-scan}.
-			\begin{figure}[htb]
-				\centering
-					\vspace{0em}
-					\includegraphics[width=0.95\textwidth]{mass_scan}
-					\caption{Similarity as a function of HMC mass scale for considered values of $\alpha$.}
-					\label{fig:mass-scan}
-			\end{figure}
-			In this case, both plots look qualitatively similar : the similarity admits a global maxima at some value of the mass scale, and worsen on both sides of it. The acceptance rate on the other hand stays really close to $1$, probably due to the $\Delta t$ being quite generosly choosen. The decrease in performance is therefore due to the fact that the particle explores less well the space. We can easily make sense of it for higher values of the mass, as the particle will be more inert and therefore less likely to explore the space. For lower values of the mass, the particle will be more reactive to forces, so the decrease in exploration can seem counter-intuitive. We could however immagine that if the mass is too low, the particle will be more likely to oscillate around the minima, and so not explore well other parts of the domain.
+			%meaning the trajectories will be some sort of isotropic oscillations.	
+			The impact of mass scale is readily understood by looking back at the formulas defining the algorithm. %\ref{eq}		
 			
-			There are a couple of difference worth noting between the $\alpha=10$ and $\alpha=1000$ cases. The first is that the second case has its peak around a higher value of the mass. This is consistent with the fact that the forces are stronger, and therefore it requires more inertia to explore well the space (when integration time is fixed). 
-			% (ASK AUDE IF MAKES SENSE). 
-			The second difference is that the $\alpha=1000$ case seems to suffer more from the mass scale being too large. The reason is probably similar, given in addition that the characteristic time is shorter for this case (and therefore the same absolute change in travelled distance is more important).
-			\subsection{Impact of Mass Symmetry}
-			What we expect to see is that mass symmetry will control the isotropy/anisotropy of inertia. Indeed, if masses are different, the particle will have different inertia in different directions, which will affect the shape of the trajectories. In some direction the particle will react more quickly to forces, while in the other it will be more inert.
-			In our case, the target distribution (and therefore potential landscape) is isotropic. We would therefore expect that better results are obtained with symmetric masses. If the main axis of motion were not to be orthogonal, we would even expect to find an advantage in properly choosing (non-zero) off-diagonal terms too. 
+			Firstly, we interprete what it means for $p$ to scale with $m$. Given that the potential does not depend on $m$, the $\Delta p$ applied at each integration step are independent of $m$. This implies that it will take longer for the particle to react to the potential landscape. Physically, this is what we call the particle's inertia.
 
-			We tried to gain insight into this with help of \ref{fig:mass-sym}, in which the similarities associated to 3000 samples for both symmetric and asymmetric masses are represented.
+			More surprisingly, we can see that altough the mass appears explicitely in the expression for cinetical energy $K=pM^{-1}p$, due to $p\sim\mathcal{N}(0,M)$, we have $K\sim\mathcal{N}(0,I)$. From this we deduce that mass does not affect the hights reached in the potential well (if we integrate sufficiently long). 
+			It does however affect the size of the steps that are taken given that $M^{-1}p\sim\mathcal{N}(0,M^{-1})$, i.e. it scales (up or down) the initial velocity. 
+
+			Given we can correct for such changes by adapting the integration time and step, it is more interesting to move to analysing how the algorith depends on the isotropy of the mass, which is the goal of the next section. 
+			%The similarities associated to 3000 samples for the different mass scales are presented in \ref{fig:mass-scan}.
+			%\begin{figure}[htb]
+			%	\centering
+			%		\vspace{0em}
+			%		\includegraphics[width=0.95\textwidth]{mass_scan}
+			%		\caption{Similarity as a function of HMC mass scale for considered values of $\alpha$.}
+			%		\label{fig:mass-scan}
+			%\end{figure}
+			%In this case, both plots look qualitatively similar : the similarity admits a global maxima at some value of the mass scale, and worsen on both sides of it. The acceptance rate on the other hand stays really close to $1$, probably due to the $\Delta t$ being quite generosly choosen. The decrease in performance is therefore due to the fact that the particle explores less well the space. We can easily make sense of it for higher values of the mass, as the particle will be more inert and therefore less likely to explore the space. For lower values of the mass, the particle will be more reactive to forces, so the decrease in exploration can seem counter-intuitive. We could however immagine that if the mass is too low, the particle will be more likely to oscillate around the minima, and so not explore well other parts of the domain.
+			\subsection{Impact of Mass Isotropy}
+			The mass isotropy/anisotropy specifies relative velocities and inertias among the directions. Anisotropic mass therefore allows a particle to move quicker and react more quickly to forces in some directions, while doing so slower in others. We expect this to be useful to improve exploration for example when the potential does not have radial symmetry around a minimum for example (but is instead elliptic). 
+
+			In our case, the target distribution is radially symmetric around the origin, but not around its minima. We could therefore expect that better results could be obtained by playing with anysotropic masses. One should however take into account that the preculiar shape of our distribution makes it hard to be confident in this statement.
+			Indeed, due to the donought shape of the potential, much of the momentum is actually efficiently converted between directions. 
+
+			We tried gaining insight with help of \ref{fig:mass-sym} and similar figures, in which the similarities associated to 2000 samples for both symmetric and asymmetric masses are represented.
 			\begin{figure}[htb]
 				\centering
 					\vspace{0em}
@@ -152,22 +160,19 @@
 					\caption{Similarity for HMC samplers with asymmetric and symmetric masses for $\alpha=1000$.}
 					\label{fig:mass-sym}
 			\end{figure}
-			A first look at the plot shows that the similarity is slightly better for the symmetric mass case. 
-			More precisely in our case, the plot associated to anisotropic masses reveils that left and right areas of the distributions are sampled more than the top and bottom ones. This seems to be a consequence of the fact that in that example $m_1>m_2$ (as the particle's inertia is stronger along the horizontal axis). 
+			Looking at the plot, we see that the similarity is not impacted by the anysotropy. One can wonder if the result would change by making the anisotropy more severe. In this case however, it would be hard to disentangle the contributions since for really different masses, $t$ and $\Delta t$ would be of different quality.  
 			\subsubsection{Impact of Integration Time}
 			The next parameter we explore is integration time. For this parameter, we expect the optimal value to be the one that allows the sampler to explore the whole space, without being excessively long (as it would slow down sampling).
-			%The similarities associated to 3000 samples for the different integration times are presented in figure \ref{fig:t-scan}.
-			%\begin{figure}[htb]
-			%	\centering
-			%		\vspace{0em}
-			%		\includegraphics[width=0.95\textwidth]{t_scan}
-			%		\caption{Similarity as a function of HMC integration time for considered values of $\alpha$.}
-			%		\label{fig:t-scan}
-			%\end{figure}
-			This was indeed the observed behaviour, though the plots are not reported due to space constraints, and there being little to comment on. 
-			In both $\alpha=10$ and $\alpha=1000$ cases similarity increases as a function of $t$ untill a plateau around $t=9\times 10^{-2}$ is reached. 
-			%Looking more closely, it seems that the curve is sligthly more noisy for the $\alpha=1000$ case.
-			%Curiously, we observe a steady decrease in acceptance rate for the $\alpha=10$ case and something that looks like a dampt oscillation for the $\alpha=1000$ one. This could be due to the characteristic time of oscillation being of the same order as the time differences considered. 
+			The similarities associated to 3000 samples for the different integration times are presented in figure \ref{fig:t-scan}.
+			\begin{figure}[htb]
+				\centering
+					\vspace{0em}
+					\includegraphics[width=0.95\textwidth]{t_scan}
+					\caption{Similarity as a function of HMC integration time for considered values of $\alpha$.}
+					\label{fig:t-scan}
+			\end{figure}
+			%This was indeed the observed behaviour, though the plots are not reported due to space constraints, and there being little to comment on. 
+			In both $\alpha=10$ and $\alpha=1000$ cases similarity increases as a function of $t$ untill a plateau around $t=9\times 10^{-2}$ is reached. This independence (or weak dependence) on $\alpha$ can be surprising at first given that the caracteristic time of radial oscillation clearly depends on $\alpha$. In both $\alpha$ cases however, the bottle neck for two sample to be distant is not moving in the radial direction, but rather, in the one ortogonal to it (given that both times the radius of the disk is larger than its width).   
 			\subsection{Impact of $\Delta t$}
 			We now turn to analysing the impact of the time step. This parameter is important as it controls the accuracy of the integration. The goal is to find the largest time step that allows for accurate integration, as this will speed up the sampler while allowing it to accept proposals frequently.
 
@@ -183,10 +188,10 @@
 			\subsection{Comment on interractions between parameters}
 			In the previous sections, the analysis of HMC's parameters was limited to a one-factor-at-a-time study. This was motivated by the non-exhaustive character of the report and the fact that meaningfull insights were associated to these longitudinal analyses. 
 			
-			In reality however, each parameter of course does not act in a vacume. More specifically, qualitative explorations of simulations reveiled for example that increasing mass slightly, required longer integration times for space-exploration to occur, and often allowed for a larger $\Delta t$ to be used. The symmetric finding was found for lowering mass slightly. This has practical implications in finding global optimal choice of parameters. Indeed, when grid search for the parameters is untractable (i.e. in high dimensions), these interractions between the parameters make it hard to find globally optimal values. Our intuition is that in these cases one can proceed in the following way to find ``good enough'' parameters ``easily'' : 
+			In reality however, each parameter of course does not act in a vacume. For example, increasing mass, requires longer integration times for good space-exploration to occur, and allows for larger $\Delta t$ to be used. This has practical implications in finding global optimal choice of parameters. Indeed, when grid search for the parameters is untractable (i.e. in high dimensions), these interractions between the parameters make it hard to find globally optimal values. Our intuition is that in these cases one can proceed in the following way to find ``good enough'' parameters ``easily'' : 
 			\begin{enumerate}
-				\item use assumptions on the potential to choose structure for the mass (isotropy, anysotropy etc.) and possibly do the same to derive a characteristic time for the oscillation,
-				\item select the locally optimal mass scale after having set  the time and $\Delta t$ generously : the time larger than optimal (guaranteeing good mixing) and $\Delta t$ smaller than optimal (granting precise integration),
+				\item estimate characteristic times for the oscillations from the expression for the potential (analytically or  numerically if not tractable),
+				\item use assumptions on the potential to fix the structure for the mass (isotropic vs anisotropic) and select the locally optimal mass after having set $t$ and $\Delta t$ generously : $t$ larger than optimal (guaranteeing good mixing) and $\Delta t$ smaller than optimal (granting precise integration),
 				\item with the new mass matrix, select the locally optimal integration time (shortest one preserving good enough mixing),
 				\item finally select the locally optimal $\Delta t$ (the biggest for which the acceptance rate is good enough).
 			\end{enumerate}
@@ -204,7 +209,7 @@
 				\caption{Similarity as a function of sample-size for RWMC and HMC samplers and considered values of $\alpha$. The sample-size represented on the x axis is that associated to the HMC sampler. The associated RWMC sample-size is obtained by matching the number of function evalutations of the HMC sampler.}
 				\label{fig:nsamples-evolution}
 		\end{figure}
-		In general, the same qualitative behaviour is observed for all algorithms : the similarity quickly increases at the start but then sees deminishing returns characteristic of concave functions. In both cases RWMC outperforms HMC in terms of similarity. The difference is slightly larger in the $\alpha=10$ case, again, due to how simple the target function is. For $\alpha=1000$, the computational overhead (of a factor 7) is for a big part compensated. We can easily imagine this trend continuing and accentuating with the dimension of the distribution, and therefore HMC vastly outperforming RWMC in these settings.
+		In general, the same qualitative behaviour is observed for all algorithms : the similarity quickly increases at the start but then sees deminishing returns characteristic of concave functions. In both cases RWMC outperforms HMC in terms of similarity. The difference is slightly larger in the $\alpha=10$ case, again, due to how simple the target function is. For $\alpha=1000$, the computational overhead (of a factor 7) is for a big part compensated. We can easily imagine this trend continuing as a function of distribution complexity. We also expect it to accentuate when the dimension of the distribution is increased, due to the curse of dimensionality. 
 		\subsubsection{Effective Sample-Size}
 		\begin{figure}[htb]
 			\begin{subfigure}[b]{\textwidth}
