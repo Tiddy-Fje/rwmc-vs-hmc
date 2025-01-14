@@ -85,12 +85,12 @@
 					&=\int_{\phi_{-t}(D)}\pi_{s}(q,p)\ dqdp \\
 					&=\pi_s(\phi_{-t}(D)).
 			\end{align}
-			The final result is obtained using the fact that volumes in phase space are preserved by the hamiltonian dynamics (in conservative systems). This result is known as Liouville's theorem, but is mentioned as theorems 2.3 in [cite].
+			The final result is obtained using the fact that volumes in phase space are preserved by the hamiltonian dynamics (in conservative systems). This result is known as Liouville's theorem, but is mentioned as theorems 2.3 in [1].
 			%K:\Omega \times D\to [0,1]$ the transition kernel of the chain, $G(q,p)$ the Gibbs measure, and $T_t[\cdot]$ the hamiltonian time evolution operator defined by $T[(q_s,p_s)]=(q_{s+t},p_{s+t})$.
 	
 			This implies specifically that $q_k\sim\pi$ for all $k\in\mathbb{N}$ if $q_0\sim \pi$. 
 	
-			If the dynamics is discretised with the Velocity Verlet algorithm, the volume in phase space is preserved up to a small error, which is why the algorithm is used in practice [cite wikipedia].
+			If the dynamics is discretised with the Velocity Verlet algorithm, the volume in phase space is preserved up to a small error, which is why the algorithm is used in practice [2].
 	\section{Exploring a 2D example}
 		\subsection{Context}
 		In this section we explore the performance of the presented algorithms on a 2D toy example\footnote{We call it a toy example because in principle one could sample from this distribution by simply writing it in polar coordinates and using the $F^{-1}$ method.}. The target distribution is taken as $f_1(q_1,q_2)=e^{-\alpha(q_1^2+q_2^2-0.25)^2}$, with $\alpha>0$ a parameter. The target distribution therefore is shaped as a doughnot and $\alpha$ controls its thickness. 
@@ -239,7 +239,7 @@
 		Consistently with the similarity results presented in \ref{fig:nsamples-evolution}, the effective sample size of the RWMC samples grows faster than that of the HMC samples, for both values of $\alpha$. Therefore in this case, the RWMC algorithm is more efficient than the HMC algorithm.
 		The difference in performance is smaller for $\alpha=1000$, as the target function is more difficult to sample from. [I HAVE A TOUGH TIME SEEING THIS. MAYBE WE CAN SAY *SLIGHTLY* SMALLER ?]
 	\section{US Birthweight Data}
-	In this section, we use HMC to perform a logistic regression on the US Birthweight data [cite]. The data consists of $n=189$ observations of 8 variables: the mother's age, weight, race (white, African-American, other), smoking status, hypertension status, presence of uterine irritability, the number of physician visits during the first trimester, the existence of past premature births, and the low birth weight status of the child. We are interested in predicting whether a child will have low birth weight based on the following covariates (refering to the mother):
+	In this section, we use HMC to perform a logistic regression on the US Birthweight data [3]. The data consists of $n=189$ observations of 8 variables: the mother's age, weight, race (white, African-American, other), smoking status, hypertension status, presence of uterine irritability, the number of physician visits during the first trimester, the existence of past premature births, and the low birth weight status of the child. We are interested in predicting whether a child will have low birth weight based on the following covariates (refering to the mother):
 	\begin{itemize}
 		\item Numerical covariates:
 		\begin{itemize}
@@ -307,9 +307,15 @@
 	\section*{Aknowledgements}
 	\newpage
 	\section*{References}
+	\noindent
+	[1] N. Bou-Rabee and J. M. Sanz-Serna, `Geometric integrators and the Hamiltonian Monte Carlo method', Acta Numerica, vol. 27, pp. 113-206, May 2018, doi: 10.1017/S0962492917000101.\newline
+	[2] `Leapfrog integration - Wikiwand'. Accessed: Dec. 14, 2024. [Online]. Available: \url{https://www.wikiwand.com/en/articles/Leapfrog%20integration}\newline
+	[3] `Introduction to the Logistic Regression Model', in Applied Logistic Regression, John Wiley \& Sons, Ltd, 2013, pp. 1-33. doi: 10.1002/9781118548387.ch1.\newline
+	%[5] `Jensen-Shannon divergence - Wikiwand'. Accessed: Dec. 18, 2024. [Online]. Available: \url{https://www.wikiwand.com/en/articles/Jensen-Shannon%20divergence}\newline
+	[4] `Answer to “How to present a Python code snippet efficiently in LaTeX?”’, TeX - LaTeX Stack Exchange. Accessed: Dec. 23, 2024. [Online]. Available: \url{https://tex.stackexchange.com/a/475828}
 	\appendix
 		\section{Commented Code Snippet}\label{appendix:commented-code-snippet}
-		As asked in the project rules, we attach here a well commented extract of the code. We do this by using a command that we found on a Stack exchange post [CITE]. We decided to include the code defining the classes for our samplers as we felt if reflected best the essence of the project.
+		As asked in the project rules, we attach here a well commented extract of the code. We do this by using a command that we found on a Stack exchange post [4]. We decided to include the code defining the classes for our samplers as we felt if reflected best the essence of the project.
 
 		Please not that both have Gihub Copilot installed. We used it responsibly however : only to complete/write code snippets we understand and find suiting.
 		\begin{python}
