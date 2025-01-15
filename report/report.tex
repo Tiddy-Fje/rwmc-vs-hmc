@@ -6,18 +6,13 @@
 %--------------------- ACTUAL FILE ---------------------- %
 \begin{document} 
 %%%
-	%\setcounter{page}{1}
-	\begin{center}
-	    \Large
-	    \textbf{HMC : When is it worth over RWMC ?} 
-	    \vspace{0.4cm}
-	    \large
-
-		Course : Stochastic Simulation \\
-	    Students : Aude Maier \& Tara Fjellman \\
-	    \small{Fall 2024}
-	\end{center}
-
+	\input{title_page} 
+	\clearpage
+	\tableofcontents
+	\thispagestyle{empty} 
+	\clearpage
+	\pagenumbering{arabic}
+	\setcounter{page}{1}
 	\section{Introduction}
 	Markov Chain Monte Carlo methods are essential tools for sampling from complex probability distributions, particularly in Bayesian inference and high-dimensional statistical modelling. Knowing which method to choose can however be challenging. This report focuses on how to make this choice based on problem characteristics between two prominent MCMC algorithms: Random Walk MC (RWMC) and Hamiltonian MC (HMC). 
 	
@@ -125,9 +120,9 @@
 
 			Looking at the evolution of the acceptance rate, we see that it is of course monotonically deacreasing with step size. This means that the obtimal value corresponds with the best exploration-acceptance rate trade-off. The acceptance rate is higher and decreases slower for the $\alpha=10$ case, which is consistent with the fact that the density is more spread out. The acceptance rate of the $\alpha=1000$ case associated to the best step size is still around 0.4, which suggests that even this case is still quite easy to sample from (i.e. random proposals are ``pretty good''). 
 		\subsection{HMC Solution}
-			\begin{wrapfigure}[18]{r}{0.6\textwidth}
+			\begin{wrapfigure}[16]{r}{0.6\textwidth}
 				\centering
-					\vspace{-2em}
+					\vspace{-4em}
 					\includegraphics[width=0.57\textwidth]{U_pot_alpha=10}
 					\caption{Potential energy landscape associated to HMC algorithm for $\alpha=10$. Version for $\alpha=1000$ is identical, except the vertical scale is multiplied by a factor 100.}
 					\label{fig:U-pot-alpha=10}
@@ -319,8 +314,12 @@
 	
 	RWMC was found to perform much better in the 2D toy example. The difference in efficiency however largely decreased when the complexity parameter was increased. For the 10D birthweight dataset, HMC vastly outperformed RWMC.  
 	This suggests that RWMC performs better in low-complexity, low-dimensional scenarios, while HMC proves superior as complexity and dimensionality increase.
-	\section*{Aknowledgements}
 	\newpage
+	\section*{Acknowledgements}
+		\paragraph{Aude:}
+		I used ...
+		\paragraph{Tara:}
+		I use Github Copilot for coding purposes, as it can gain me some time by auto-completing lines. I however never keep lines I don't understand or find not relevant. I sometimes used Chat GPT to brainstorm ideas related to some problems I faced and did not have the right resources to tackle. In these cases I still kept a critical mindset and dug deeper in the directions that seemed promising. I also used Chat GPT to help with certain wordings in the introduction. 
 	\section*{References}
 	\noindent
 	[1] N. Bou-Rabee and J. M. Sanz-Serna, `Geometric integrators and the Hamiltonian Monte Carlo method', Acta Numerica, vol. 27, pp. 113-206, May 2018, doi: 10.1017/S0962492917000101.\newline
@@ -331,8 +330,6 @@
 	\appendix
 		\section{Commented Code Snippet}\label{appendix:commented-code-snippet}
 		As asked in the project rules, we attach here a well commented extract of the code. We do this by using a command that we found on a Stack exchange post [4]. We decided to include the code defining the classes for our samplers as we felt if reflected best the essence of the project.
-
-		Please not that both have Gihub Copilot installed. We used it responsibly however : only to complete/write code snippets we understand and find suiting.
 		\begin{python}
 			import numpy as np
 			from abc import ABC, abstractmethod
