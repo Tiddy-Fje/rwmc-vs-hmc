@@ -19,6 +19,13 @@
 	\end{center}
 
 	\section{Introduction}
+	Markov Chain Monte Carlo methods are essential tools for sampling from complex probability distributions, particularly in Bayesian inference and high-dimensional statistical modelling. Knowing which method to choose can however be challenging. This report focuses on how to make this choice based on problem characteristics between two prominent MCMC algorithms: Random Walk MC (RWMC) and Hamiltonian MC (HMC). 
+	
+	We first present an overview of the theoretical foundations of both methods, and prove important properties of HMC.	
+	We then explore and interpret how parameters, such as step size for RWMC and mass for HMC influence performance. To systematically assess and compare their efficiency, we use among others a similarity metric and effective sample size. 
+	Specifically, we consider two case studies: a 2D toy example with tunable complexity and a higher-dimensional 10D birthweight dataset. 
+	
+	Our findings suggest that RWMC performs better in low-complexity, low-dimensional scenarios, while HMC proves superior as complexity and dimensionality increase.
 	\section{Core Theory}
 		\subsection{RWMC}
 		A common shortfall of the simple random walk Metropolis proposal in the Metropolis-Hastings algorithm is the slow exploration rate of the state space. Much effort has been devoted in recent years to devise proposals with more efficient exploration rates (i.e "distant" proposals).
@@ -304,6 +311,14 @@
 
 		To investigate this observation further, we compute the effective sample size of the regression coefficients and intercept for both HMC and RWMC. The results are shown in ~\ref{fig:ess-regression}. We observe that the effective sample size of the HMC samples consistently grow at a faster rate than that of the RWMC samples. Therefore in this setting, the target distribution is complex enough that RWMC has difficulty exploring the state space efficiently. This is also illustrated by the low acceptance rate of the RWMC sampler, which is around $0.4$, compared to 0.97 for the HMC sampler. The additionnal computational cost of the HMC sampler is in this case overcome by its quicker autocorrelation decay, making it more efficient than RWMC. [MAYBE WE SHOULD BE CAREFUL IN USING COMPLEX INSTEAD OF HIGH DIMENSIONAL ?? JUST A THOUGH, WHAT'S YOUR OPINION ?]
 	\section{Conclusion}
+	In this report we provided insight on how to choose between RWMC and HMC based on problem characteristics. 
+	
+	We first presented an overview of the theoretical foundations of both methods, and proved important properties of HMC.	
+	Then, we explored and interpreted how parameters, such as step size for RWMC and mass for HMC influence performance. To systematically assess and compare their efficiency, we used among others a similarity metric and effective sample size. 
+	Specifically, we considered two case studies: a 2D toy example with tunable complexity and a higher-dimensional 10D birthweight dataset. 
+	
+	RWMC was found to perform much better in the 2D toy example. The difference in efficiency however largely decreased when the complexity parameter was increased. For the 10D birthweight dataset, HMC vastly outperformed RWMC.  
+	This suggests that RWMC performs better in low-complexity, low-dimensional scenarios, while HMC proves superior as complexity and dimensionality increase.
 	\section*{Aknowledgements}
 	\newpage
 	\section*{References}
