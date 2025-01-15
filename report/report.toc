@@ -12,12 +12,12 @@
 \contentsline {subsection}{\numberline {3.3}HMC Solution}{4}{subsection.3.3}%
 \contentsline {subsection}{\numberline {3.4}Impact of Mass Scale}{4}{subsection.3.4}%
 \contentsline {subsection}{\numberline {3.5}Impact of Mass Isotropy}{5}{subsection.3.5}%
-\contentsline {subsubsection}{\numberline {3.5.1}Impact of Integration Time}{6}{subsubsection.3.5.1}%
-\contentsline {subsection}{\numberline {3.6}Impact of $\Delta t$}{6}{subsection.3.6}%
-\contentsline {subsection}{\numberline {3.7}Comment on interractions between parameters}{7}{subsection.3.7}%
-\contentsline {subsection}{\numberline {3.8}RWMC and HMC Comparison}{8}{subsection.3.8}%
-\contentsline {subsubsection}{\numberline {3.8.1}Target-Similarity as a Function of Sample-Size}{8}{subsubsection.3.8.1}%
-\contentsline {subsubsection}{\numberline {3.8.2}Effective Sample-Size}{8}{subsubsection.3.8.2}%
+\contentsline {subsection}{\numberline {3.6}Impact of Integration Time}{6}{subsection.3.6}%
+\contentsline {subsection}{\numberline {3.7}Impact of $\Delta t$}{6}{subsection.3.7}%
+\contentsline {subsection}{\numberline {3.8}Comment on interractions between parameters}{7}{subsection.3.8}%
+\contentsline {subsection}{\numberline {3.9}RWMC and HMC Comparison}{8}{subsection.3.9}%
+\contentsline {subsubsection}{\numberline {3.9.1}Target Similarity}{8}{subsubsection.3.9.1}%
+\contentsline {subsubsection}{\numberline {3.9.2}Effective Sample-Size}{8}{subsubsection.3.9.2}%
 \contentsline {section}{\numberline {4}US Birthweight Data}{9}{section.4}%
 \contentsline {subsection}{\numberline {4.1}HMC Sampling}{10}{subsection.4.1}%
 \contentsline {subsection}{\numberline {4.2}Coefficients Comparison}{10}{subsection.4.2}%

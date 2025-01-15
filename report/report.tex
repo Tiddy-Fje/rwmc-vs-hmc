@@ -166,7 +166,7 @@
 					\label{fig:mass-sym}
 			\end{figure}
 			Looking at the plot, we see that the similarity is not impacted by the anysotropy. One can wonder if the result would change by making the anisotropy more severe. In this case however, it would be hard to disentangle the contributions since for really different masses, $t$ and $\Delta t$ would be of different quality.  
-			\subsubsection{Impact of Integration Time}
+			\subsection{Impact of Integration Time}
 			The next parameter we explore is integration time. For this parameter, we expect the optimal value to be the one that allows the sampler to explore the whole space, without being excessively long (as it would slow down sampling).
 			The similarities associated to 3000 samples for the different integration times are presented in figure \ref{fig:t-scan}. Here we took $dt=0.01$, and averaged over 10 chains.  
 			\begin{figure}[htb]
@@ -204,7 +204,7 @@
 
 			Following the procedure described above, the locally optimal  HMC parameters for the $\alpha=10$ case were found to be $m_1=m_2=1$, $t=dt=0.09$, and for the $\alpha=1000$ case $m_1=m_2=1$, $t=0.09$, $dt=0.03$. Refering to \ref{fig:rwmc-scan}, the optimal step size for the RWMC algorithm is around $0.085$ when $\alpha=10$ and $0.075$ when $\alpha=1000$. In the next section, these parameters will be used to compare the performance of the optimised HMC and RWMC algorithms.
 		\subsection{RWMC and HMC Comparison}
-		\subsubsection{Target-Similarity as a Function of Sample-Size}\label{sec:target-similarity}
+		\subsubsection{Target Similarity}\label{sec:target-similarity}
 		To determine which algorithm is best to use for the studied 2D example, it is interesting to compare the results obtained with optimised versions of the RWMC and HMC algorithms as a function of sample size (matching the number of function evaluations). We do this in \ref{fig:nsamples-evolution}. The results are averaged over 5 chains.
 		%Note that the optimal HMC parameters for the $\alpha=10$ case were not found following the algorithm described above. Indeed in this special case, the problem is so simple that taking a single timestep of size $t$ is enough to get a good similarity. The improvement obtained by taking more timesteps is therefore irrelevant when compared to the computation burden.
 		\begin{figure}[htb]
