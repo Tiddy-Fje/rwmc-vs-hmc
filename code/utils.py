@@ -133,7 +133,6 @@ def plot_eff_sample_size(samples1, samples2, label1, label2, dt, t, filename):
     plt.ylabel('Effective sample size')
     plt.xlabel('Number of evaluations')
     plt.grid()
-    plt.title(r'$\alpha=1000$')
     plt.savefig( f'../figures/{filename}.png' )
     plt.show()
 
@@ -151,6 +150,5 @@ def plot_acf(samples1, samples2, label1, label2, filename):
     plt.xlabel('Lag')
     plt.ylabel('ACF')
     plt.grid()
-    plt.title(r'$\alpha=1000$')
     plt.savefig( f'../figures/{filename}.png' )
     plt.show()

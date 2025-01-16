@@ -9,8 +9,8 @@ import pandas as pd
 X,y,sigmas = preprocess_data()
 logdensity, grad_logdensity = logposterior(X,y,sigmas)
 
-mass = 0.05
-leapfrog_time = 0.06
+mass = 0.02
+leapfrog_time = 0.08
 dt = 0.02
 
 sample_hamiltonian = HamiltonianMCMC(0, np.zeros(X.shape[1]), logdensity, 0, grad_logdensity, np.ones(X.shape[1])*mass, leapfrog_time, dt)
@@ -26,9 +26,9 @@ plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 plt.xlabel('t')
 plt.grid()
 plt.savefig('../figures/traceplot_hamiltonian_regression.png', bbox_inches='tight')
-
-sample_hamiltonian = HamiltonianMCMC(0, np.zeros(X.shape[1]), logdensity, 200, grad_logdensity, np.ones(X.shape[1])*mass, leapfrog_time, dt)
-result = sample_hamiltonian.sample(1,5200)
+plt.show()
+sample_hamiltonian = HamiltonianMCMC(42, np.zeros(X.shape[1]), logdensity, 200, grad_logdensity, np.ones(X.shape[1])*mass, leapfrog_time, dt)
+result = sample_hamiltonian.sample(1,10200)
 
 fig = plt.figure(figsize=(10,4))
 df = pd.melt(pd.DataFrame(result[0,:,:], columns=keys), var_name='covariates', value_name='samples')
@@ -41,8 +41,9 @@ plt.savefig('../figures/violin_hamiltonian_regression.png', bbox_inches='tight')
 
 mean_HMC = np.mean(result[0,:,:], axis=0)
 
-sample_RW = RandomWalkMCMC(3, np.zeros(X.shape[1]), logdensity, 200, 0.1)
-result_RW = sample_RW.sample(1,35200)
+result = sample_hamiltonian.sample(1,700)
+sample_RW = RandomWalkMCMC(0, np.zeros(X.shape[1]), logdensity, 200, 0.1)
+result_RW = sample_RW.sample(1,4700)
 mean_RW = np.mean(result_RW[0,:,:], axis=0)
 
 clf = LogisticRegression().fit(X[:,:-1], y)
@@ -69,6 +70,6 @@ plt.legend()
 plt.savefig('../figures/regression_comparison.png', bbox_inches='tight')
 plt.show()
 
-result = sample_hamiltonian.sample(10,5200)
-result_RW = sample_RW.sample(10,35200)
-plot_eff_sample_size(result, result_RW, 'HMC', 'RWMC', 0.02, 0.06, filename='eff_sample_size_regression')
+result = sample_hamiltonian.sample(10,1200)
+result_RW = sample_RW.sample(10,9200)
+plot_eff_sample_size(result, result_RW, 'HMC', 'RWMC', dt, leapfrog_time, filename='eff_sample_size_regression')

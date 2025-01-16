@@ -21,36 +21,33 @@
 	Specifically, we consider two case studies: a 2D toy example with tunable complexity and a higher-dimensional 10D birthweight dataset. 
 	
 	Our findings suggest that RWMC performs better in low-complexity, low-dimensional scenarios, while HMC proves superior as complexity and dimensionality increase.
-	\section{Core Theory}
-		\subsection{RWMC}
-		A common shortfall of the simple random walk Metropolis proposal in the Metropolis-Hastings algorithm is the slow exploration rate of the state space. Much effort has been devoted in recent years to devise proposals with more efficient exploration rates (i.e "distant" proposals).
-		\subsection{HMC}
-			\subsubsection{The Algorithm}
-			HMC considers the Hamiltonian dynamics associated to a Hamiltonian function $H$ : $\mathbb{R}^d \times \mathbb{R}^d \rightarrow \mathbb{R}, H=H(q, p)$, where the position variables $\{q_i\}$ are the random variables we want to sample and ``fictitious'' momentum variables $\{p_i\}$ are introduced. 
-			
-			The Hamiltonian dynamics are dictated by the equations
+	\section{Hamiltonian Monte Carlo}
+		\subsection{The Algorithm}
+		Hamiltonian Monte Carlo is a more sophisticated MCMC algorithm designed to display better exploration properties than RWMC, whose main shortfall is the slow exploration rate of the state space.
+		It introduces fictitious variables $\{p_i\}$ to the state space, and simulates Hamiltonian dynamics to propose new states. The Hamiltonian function $H(q, p)$  treats the fictitious variables as momenta, and the variable of interest $\{q_i\}$ as positions.
+		$H(q, p)$ is defined as the sum of the potential energy $U(q)= -\log \pi(q)$, with $\pi(q)$ the unormalized target distribution from which we want to sample, and the kinetic energy $K(p)=\sum_{i=1}^d \frac{p_i^2}{2 m_i}$, where $m_i$ are mass parameters.
+
+		The dynamics are governed by the Hamiltonian equations:
 			\begin{gather}
 			\frac{d q_i}{d t} =\frac{\partial H}{\partial p_i}, \\
 			\frac{d p_i}{d t} =-\frac{\partial H}{\partial q_i},
 			\end{gather}
-			for $i=1, \ldots, d$. In general, the above equation can be understood as a conservation of the total energy of a system in time.
-			
-			Samples of the $q$ vector are then obtained by constructing a Markov Chain Monte Carlo algorithm with given invariant density $\pi(q)$ on the position variables $\left(q_1, \ldots, q_d\right)$. To do so, we introduce the potential energy $U(q)=-\log \pi(q)$, a kinetic energy $K(p)=\sum_{i=1}^d \frac{p_i^2}{2 m_i}$, for some mass parameters $m_i, i=1, \ldots, d$, and the Hamiltonian $H(q, p)=U(q)+K(p)$. Having introduced these functions, we can then simulate a Markov chain in which each iteration re-samples the momentum, evolves the Hamiltonian system for a certain time, and then performs a Metropolis-type acceptance-rejection step on the new position vector. More concretely, we consider the so-called Gibbs measure, given by
-			$$
-			G(q, p)=\frac{1}{Z} e^{-H(p, q)},
-			$$
-			where $Z$ is the (unknown) normalizing constant. Notice that such a Gibbs measure naturally factorizes as:
-			$$
-			G(q, p)=\frac{1}{\tilde{Z}} e{-U(q)} \frac{1}{\prod_{i=1}^d \sqrt{2 \pi m_i}} e{-K(p)}
-			$$
-			
-			where $\frac{1}{Z} e^{-U(q)}$ is the probability density we are interested in sampling from, whereas the other factor is a multivariate Gaussian distribution $N(0, M)$ with $M=\operatorname{diag}\left(m_1, \ldots, m_d\right)$. Given the state $q^n$ at iteration $n$, the idea of the algorithm is then to sample a momentum vector $p^n$ from $N(0, M)$, and compute $H\left(q^n, p^n\right)$. The Hamiltonian system is then evolved starting from $q(0)=q^n, p(0)=p^n$, on a time interval $[0,T]$ using the dynamical equations for some arbitrary final time $T$, to obtain $(q(T), p(T))$. This state is then taken as the proposal state in a Metropolis-Hastings step to generate the new state $q^{n+1}$. For many problems of modern relevance, it is not possible to compute the dynamics exactly and numerical discretization is needed. A convenient time discretization scheme is the Verlet's method: the time interval $[0, T]$ is divided into $N_t$ intervals of size $\epsilon>0$ and for each particle $i$ the position $q_i$ and momemtum $p_i$ are updated as follows			
+			for $i=1, \ldots, d$.
+		
+			The dynamics is used to propose new states, which are then accepted or rejected based on the Metropolis-Hastings acceptance probability. Concretely, starting from a state vector $q^n$, a momentum vector $p^n$ is sampled from a Gaussian distribution $N(0, M)$ with $M=\operatorname{diag}\left(m_1, \ldots, m_d\right)$, and the Hamiltonian system is evolved for a time $T$ to obtain $(q(T), p(T))$. The acceptance rate for the new state $q^{n+1}$ is then computed as:
+			\begin{equation}
+				\alpha = \min\left(1, \exp \left[U\left(q^n\right)+K\left(p^n\right)-U\left(q^*\right)-K\left(p^*\right)\right]\right).
+			\end{equation}
+
+			In practice, the time integration of the Hamiltonian dynamics is often not possible, and numerical discretization is needed. A common choice is the Verlet's method, which divides the time interval $[0, T]$ into $N_t$ intervals of size $\epsilon>0$. The position and momentum are updated as follows:
 			\begin{align}
-			& p_i(t+\epsilon / 2)=p_i(t)-(\epsilon / 2) \frac{\partial U(q(t))}{\partial q_i}, \\
-			& q_i(t+\epsilon)=q_i(t)+\epsilon \frac{p_i(t+\epsilon / 2)}{m_i}, \\
-			& p_i(t+\epsilon)=p_i(t+\epsilon / 2)-(\epsilon / 2) \frac{\partial U(q(t+\epsilon))}{\partial q_i}.
-			\end{align}	
-			%The main steps of the Hamiltonian Monte Carlo algorithm using Verlet's method are outlined in Algorithm 1. There, $N$ is the length of the chain, $\epsilon$ the time step in Verlet's method, and $T$ the final integration time.
+				& p_i(t+\epsilon / 2)=p_i(t)-(\epsilon / 2) \frac{\partial U(q(t))}{\partial q_i}, \\
+				& q_i(t+\epsilon)=q_i(t)+\epsilon \frac{p_i(t+\epsilon / 2)}{m_i}, \\
+				& p_i(t+\epsilon)=p_i(t+\epsilon / 2)-(\epsilon / 2) \frac{\partial U(q(t+\epsilon))}{\partial q_i}.
+				\end{align}	
+			
+			
+	\subsection{Theoretical Properties of HMC}
 			\subsubsection{Acceptance Rate}
 			To explore how the acceptance rate behaves in HMC, we must consider the quantity \newline $\exp \left[U\left(q^n\right)+K\left(p^n\right)-U\left(q^*\right)-K\left(p^*\right)\right]$ which appears in the expression for $\alpha$ in the Metropolis-Hastings acceptance probability. Using the definition $H(q, p)=U(q)+K(p)$ we can write this quantity as:
 			\begin{gather}
@@ -233,13 +230,13 @@
 			\caption{Autocorrelation plots and effective sample-size for RWMC and HMC samplers and considered values of $\alpha$. Both $q_1$ and $q_2$ are shown on each plot, and the results are averaged over 5 chains.}
 			\label{fig:acf-ess}
 		\end{figure}
-		The main motivation behind HMC is to decrease the autocorrelation of the samples by making step proposals that are more likely to be accepted, whilst still being distant enough to explore the state space (I WOULD HAVE PUT IT THE OTHER WAY AROUND MAYBE : BY TAKING MORE DISTANT STEPS, WHILST KEEPING THE PROBABILITY OF ACCEPTANCE HIGH). This effect is expected to be important when the target distribution is difficult to sample from, and a random walk is unable to explore the space efficiently.
+		The main motivation behind HMC is to decrease the autocorrelation of the samples by making step proposals that are more distant, whilst keeping a high probability of acceptance. Indeed, as shown in Sec., the theoretical acceptance rate of HMC (i.e. without time discretization) stays equal to 1, no matter how large the integration time is. This effect is expected to become important when the target distribution is difficult to sample from, and a random walk is unable to explore the space efficiently.
 		This can be observed in the autocorrelation plots of \ref{fig:acf-ess}a. In both cases $\alpha=10$ and $\alpha=1000$, the autocorrelation of the HMC samples decreses faster than that of the RWMC samples. As expected, the effect is subtle for $\alpha=10$, as the RWMC samples are already quite decorrelated, and more pronounced for $\alpha=1000$.
 
 		On the other hand, HMC requires more evaluations of the target function to generate a sample, as it needs to compute the gradient of the potential energy twice at each step of Verlet's method, in addition to the evaluation of the proposal step. This computation time could be used to generate more samples with RWMC, which would increase the effective sample size (number of independent samples that would give the same variance as the autocorrelated samples) and therefore the similarity of the samples to the target distribution.
 		To determine whether the decrease in autocorrelation is worth the increase in computation time, we present the effective sample size of the RWMC and HMC samples in \ref{fig:acf-ess}b as a function of the number of evaluations of the target function (and its gradient).
 		Consistently with the similarity results presented in \ref{fig:nsamples-evolution}, the effective sample size of the RWMC samples grows faster than that of the HMC samples, for both values of $\alpha$. Therefore in this case, the RWMC algorithm is more efficient than the HMC algorithm.
-		The difference in performance is smaller for $\alpha=1000$, as the target function is more difficult to sample from. [I HAVE A TOUGH TIME SEEING THIS. MAYBE WE CAN SAY *SLIGHTLY* SMALLER ?]
+		
 	\section{US Birthweight Data}
 	In this section, we use HMC to perform a logistic regression on the US Birthweight data [3]. The data consists of $n=189$ observations of 8 variables: the mother's age, weight, race (white, African-American, other), smoking status, hypertension status, presence of uterine irritability, the number of physician visits during the first trimester, the existence of past premature births, and the low birth weight status of the child. We are interested in predicting whether a child will have low birth weight based on the following covariates (refering to the mother):
 	\begin{itemize}
@@ -281,7 +278,7 @@
 				\vspace{0em}
 				\includegraphics[width=0.9\textwidth]
 				{violin_hamiltonian_regression}
-				\caption{Violin plot of the regression coefficients and intercept for the US Birthweight data, obtained using HMC with parameters $dt=0.02$, $t=0.6$, and $m=0.05$.The histograms are taken over 4900 samples of the chains, after a burn-in period of 100 steps.}
+				\caption{Violin plot of the regression coefficients and intercept for the US Birthweight data, obtained using HMC with parameters $dt=0.02$, $t=0.08$, and $m=0.02$.The histograms are taken over 10000 samples of the chains, after a burn-in period of 200 steps.}
 				\label{fig:violin-hamiltonian-regression}
 		\end{figure}
 		\subsection{Coefficients Comparison}
@@ -301,10 +298,10 @@
 				\caption{Effective sample size for the covariates of the regression model \ref{eq:log-likelihood}, sampled using HMC and RWMC. Each covariate is shown separately, and the results are averaged over 10 chains.}
 				\label{fig:ess-regression}
 		\end{figure}
-		We consider the task of estimating the expectation of the regression coefficients and intercept from HMC sampling of the posterior distribution, and we compare it to the same results obtained using RWMC. To evaluate the accuracy of the estimates, we use the results of a standard logistic regression procedure performed using limited-memory BFGS optimization (this was done using the \texttt{LogisticRegression} function from the \texttt{scikit-learn} library). This optimization process aims to find the argmax of the log-likelihood function, not the mean. However, it is shown on ~\ref{fig:violin-hamiltonian-regression} that the distributions of the coefficients are approximately gaussian, in which case the mean and the argmax are the same. The results are shown in ~\ref{fig:regression-comparison}. The mean over the HMC and RWMC distributions are taken over chains lengths matching the number of evaluations of the log-likelihood function and its gradient (5000 steps for HMC and 35000 steps for RWMC). Both the HMC and RWMC estimates appears to be very close to the BFGS estimates, showing that both algorithms are able to accurately estimate the regression coefficients and intercept.
+		We consider the task of estimating the expectation of the regression coefficients and intercept from HMC sampling of the posterior distribution, and we compare it to the same results obtained using RWMC. To evaluate the accuracy of the estimates, we use the results of a standard logistic regression procedure performed using limited-memory BFGS optimization (this was done using the \texttt{LogisticRegression} function from the \texttt{scikit-learn} library). This optimization process aims to find the argmax of the log-likelihood function, not the mean. However, it is shown on ~\ref{fig:violin-hamiltonian-regression} that the distributions of the coefficients are approximately gaussian, in which case the mean and the argmax are the same. The results are shown in ~\ref{fig:regression-comparison}. The mean over the HMC and RWMC distributions are taken over chains lengths matching the number of evaluations of the log-likelihood function and its gradient (500 steps for HMC and 4500 steps for RWMC). Both the HMC and RWMC estimates appear to be close to the BFGS estimates, showing that both algorithms are able to accurately estimate the regression coefficients and intercept.
 		Nonetheless, we observe that the HMC estimates are overall slightly closer to the BFGS than the RWMC ones, hence HMC outperforms RWMC in this case. This is consistent with the results obtained in section \ref{sec:target-similarity}, where HMC was shown to perform comparatively better in terms of target similarity for more complex target distributions.
 
-		To investigate this observation further, we compute the effective sample size of the regression coefficients and intercept for both HMC and RWMC. The results are shown in ~\ref{fig:ess-regression}. We observe that the effective sample size of the HMC samples consistently grow at a faster rate than that of the RWMC samples. Therefore in this setting, the target distribution is complex enough that RWMC has difficulty exploring the state space efficiently. This is also illustrated by the low acceptance rate of the RWMC sampler, which is around $0.4$, compared to 0.97 for the HMC sampler. The additionnal computational cost of the HMC sampler is in this case overcome by its quicker autocorrelation decay, making it more efficient than RWMC. [MAYBE WE SHOULD BE CAREFUL IN USING COMPLEX INSTEAD OF HIGH DIMENSIONAL ?? JUST A THOUGH, WHAT'S YOUR OPINION ?]
+		To investigate this observation further, we compute the effective sample size of the regression coefficients and intercept for both HMC and RWMC. The results are shown in ~\ref{fig:ess-regression}. We observe that the effective sample size of the HMC samples consistently grow at a faster rate than that of the RWMC samples. Therefore in this setting, the high dimensionality of the target distribution makes it difficult for RWMC to explore the state space efficiently. This is also illustrated by the low acceptance rate of the RWMC sampler, which is around $0.4$, compared to 0.7 for the HMC sampler. The additionnal computational cost of the HMC sampler is in this case overcome by its quicker autocorrelation decay, making it more efficient than RWMC.
 	\section{Conclusion}
 	In this report we provided insight on how to choose between RWMC and HMC based on problem characteristics. 
 	
@@ -317,7 +314,7 @@
 	\newpage
 	\section*{Acknowledgements}
 		\paragraph{Aude:}
-		I used ...
+		I used the autocompletion feature of Github Copilot to gain time, both when coding and writing the report. I only kept the suggestions that were finishing my sentences or lines of code in the way I intended them to be.
 		\paragraph{Tara:}
 		I use Github Copilot for coding purposes, as it can gain me some time by auto-completing lines. I however never keep lines I don't understand or find not relevant. I sometimes used Chat GPT to brainstorm ideas related to some problems I faced and did not have the right resources to tackle. In these cases I still kept a critical mindset and dug deeper in the directions that seemed promising. I also used Chat GPT to help with certain wordings in the introduction. 
 	\section*{References}
