@@ -14,9 +14,9 @@
 	\pagenumbering{arabic}
 	\setcounter{page}{1}
 	\section{Introduction}
-	Markov Chain Monte Carlo methods are essential tools for sampling from complex probability distributions, particularly in Bayesian inference and high-dimensional statistical modelling. Knowing which method to choose can however be challenging. This report focuses on how to make this choice based on problem characteristics between two prominent MCMC algorithms: Random Walk MC (RWMC) and Hamiltonian MC (HMC). 
+	Markov Chain Monte Carlo (MCMC) methods are essential tools for sampling from complex probability distributions, particularly in Bayesian inference and high-dimensional statistical modelling. Knowing which method to choose can however be challenging. This report focuses on how to make this choice based on problem characteristics between two prominent MCMC algorithms: Random Walk MC (RWMC) and Hamiltonian MC (HMC). 
 	
-	We first present an overview of the theoretical foundations of both methods, and prove important properties of HMC.	
+	We first present an overview of the theoretical foundations of HMC, and prove important properties for it.	
 	We then explore and interpret how parameters, such as step size for RWMC and mass for HMC influence performance. To systematically assess and compare their efficiency, we use among others a similarity metric and effective sample size. 
 	Specifically, we consider two case studies: a 2D toy example with tunable complexity and a higher-dimensional 10D birthweight dataset. 
 	
@@ -27,28 +27,27 @@
 		It introduces fictitious variables $\{p_i\}$ to the state space, and simulates Hamiltonian dynamics to propose new states. The Hamiltonian function $H(q, p)$  treats the fictitious variables as momenta, and the variable of interest $\{q_i\}$ as positions.
 		$H(q, p)$ is defined as the sum of the potential energy $U(q)= -\log \pi(q)$, with $\pi(q)$ the unormalized target distribution from which we want to sample, and the kinetic energy $K(p)=\sum_{i=1}^d \frac{p_i^2}{2 m_i}$, where $m_i$ are mass parameters.
 
-		The dynamics are governed by the Hamiltonian equations:
+		The dynamics are governed by the Hamiltonian equations :
 			\begin{gather}
 			\frac{d q_i}{d t} =\frac{\partial H}{\partial p_i}, \\
 			\frac{d p_i}{d t} =-\frac{\partial H}{\partial q_i},
 			\end{gather}
 			for $i=1, \ldots, d$.
 		
-			The dynamics is used to propose new states, which are then accepted or rejected based on the Metropolis-Hastings acceptance probability. Concretely, starting from a state vector $q^n$, a momentum vector $p^n$ is sampled from a Gaussian distribution $N(0, M)$ with $M=\operatorname{diag}\left(m_1, \ldots, m_d\right)$, and the Hamiltonian system is evolved for a time $T$ to obtain $(q(T), p(T))$. The acceptance rate for the new state $q^{n+1}$ is then computed as:
+			The dynamics is used to propose new states, which are then accepted or rejected based on the Metropolis-Hastings acceptance rule. Concretely, starting from a state vector $q^n$, a momentum vector $p^n$ is sampled from a Gaussian distribution $N(0, M)$ with $M=\operatorname{diag}\left(m_1, \ldots, m_d\right)$, and the Hamiltonian system is evolved for a time $T$ to obtain the proposal $(q^*, p^*)$. The acceptance rate for the new state $q^{n+1}$ is then computed as:
 			\begin{equation}
 				\alpha = \min\left(1, \exp \left[U\left(q^n\right)+K\left(p^n\right)-U\left(q^*\right)-K\left(p^*\right)\right]\right).
 			\end{equation}
 
-			In practice, the time integration of the Hamiltonian dynamics is often not possible, and numerical discretization is needed. A common choice is the Verlet's method, which divides the time interval $[0, T]$ into $N_t$ intervals of size $\epsilon>0$. The position and momentum are updated as follows:
+			In practice, analytical time integration of the Hamiltonian dynamics is often not possible, and numerical discretization is needed. A common choice is Verlet's method, which divides the time interval $[0, T]$ into $N_T$ intervals of size $\epsilon>0$. The position and momentum are updated as follows:
 			\begin{align}
 				& p_i(t+\epsilon / 2)=p_i(t)-(\epsilon / 2) \frac{\partial U(q(t))}{\partial q_i}, \\
 				& q_i(t+\epsilon)=q_i(t)+\epsilon \frac{p_i(t+\epsilon / 2)}{m_i}, \\
 				& p_i(t+\epsilon)=p_i(t+\epsilon / 2)-(\epsilon / 2) \frac{\partial U(q(t+\epsilon))}{\partial q_i}.
 				\end{align}	
 			
-			
 	\subsection{Theoretical Properties of HMC}
-			\subsubsection{Acceptance Rate}
+			\subsubsection{Acceptance Rate}\label{sec:acceptance-rate}
 			To explore how the acceptance rate behaves in HMC, we must consider the quantity \newline $\exp \left[U\left(q^n\right)+K\left(p^n\right)-U\left(q^*\right)-K\left(p^*\right)\right]$ which appears in the expression for $\alpha$ in the Metropolis-Hastings acceptance probability. Using the definition $H(q, p)=U(q)+K(p)$ we can write this quantity as:
 			\begin{gather}
 				\exp \left(U\left(q^n\right)+K\left(p^n\right)-U\left(q^*\right)-K\left(p^*\right)\right) = \exp \left[H\left(q^n, p^n\right)-H\left(q^* p^*\right)\right].
@@ -56,18 +55,17 @@
 			\end{gather}
 			Since the Hamiltonian is conserved under the Hamiltonian dynamics :
 			\begin{align}
-			\frac{d H}{d t}=&\sum_i \frac{\partial H}{\partial p_i} \frac{d p_i}{d t}+\sum \frac{\partial H}{\partial q_i} \frac{\partial q_i}{d t} \\
+			\frac{d H}{d t}=&\sum_i \frac{\partial H}{\partial p_i} \frac{d p_i}{d t}+\sum_i \frac{\partial H}{\partial q_i} \frac{\partial q_i}{d t} \\
 			=&-\sum_i \frac{\partial H}{\partial p_i} \frac{\partial H}{\partial q_i}+\sum_i \frac{\partial H}{\partial q_i} \frac{\partial H_i}{\partial p_i} = 0,
 			\end{align}
 			we find by using this in \ref{eq:HMC-acceptance-rate} that if integration is exact, the acceptance rate is always 1.
 
 			Under the assumption that the Hamiltonian dynamics is discretised, conservation is there in the best case on average. This implies the acceptance rate will be less than 1. 
 			\subsubsection{Convergence to Target Distribution}
-			\paragraph{Gibbs measure invariance}
-			Under the assumption that there is no numerical error, we want to prove that the Gibbs measure is invariant for the chain generated by the hamiltonian dynamics.
+			Under the assumption that there is no numerical error, we want to prove that the Gibbs measure is invariant for the chain generated by the Hamiltonian dynamics.
 	
-			This is equivalent to saying that the Gibbs measure $\pi$ is the same before and after an evolution of $t$ seconds from the hamiltonian dynamics. 
-			To prove this we first introduce hamiltonian dynamics operators $\phi,\Phi$ acting respectively on the phase space and the Gibbs measure~: $\phi_t(q_s,p_s)=(q_{s+t},p_{s+t});\Phi_t[\pi_s]=\pi_{t+s}$, $\forall t\in\mathbb{R}$.
+			This is equivalent to saying that the Gibbs measure $\pi$ is the same before and after an evolution of $t$ seconds from the Hamiltonian dynamics. 
+			To prove this we first introduce Hamiltonian dynamics operators $\phi,\Phi$ acting respectively on the phase space and the Gibbs measure~: $\phi_t(q_s,p_s)=(q_{s+t},p_{s+t});\Phi_t[\pi_s]=\pi_{t+s}$, $\forall t\in\mathbb{R}$.
 			The statement we want to prove can then be expressed as 
 			\begin{gather}
 				\Phi_t[\pi_s](D)=\pi_{s+t}(D)\quad \forall D\in\mathcal{B}(\Omega),\forall s,t\in\mathbb{R},
@@ -78,21 +76,22 @@
 			\end{gather}
 			with $\Omega$ the phase space.
 	
-			We can now write the left hand side of the equation as
+			We therefore write the left hand side of the equation as
 			\begin{align}
 				\Phi_t[\pi_s](D)&=\int_D \pi_{s+t}(q,p)\ dqdp \\
 					&=\int_{\phi_{-t}(D)}\pi_{s}(q,p)\ dqdp \\
 					&=\pi_s(\phi_{-t}(D)).
 			\end{align}
-			The final result is obtained using the fact that volumes in phase space are preserved by the hamiltonian dynamics (in conservative systems). This result is known as Liouville's theorem, but is mentioned as theorems 2.3 in [1].
+			The final result is obtained using the fact that volumes in phase space are preserved by the Hamiltonian dynamics (in conservative systems). This result is known as Liouville's theorem, but is mentioned as theorem 2.3 in [1].
 			%K:\Omega \times D\to [0,1]$ the transition kernel of the chain, $G(q,p)$ the Gibbs measure, and $T_t[\cdot]$ the hamiltonian time evolution operator defined by $T[(q_s,p_s)]=(q_{s+t},p_{s+t})$.
 	
 			This implies specifically that $q_k\sim\pi$ for all $k\in\mathbb{N}$ if $q_0\sim \pi$. 
 	
-			If the dynamics is discretised with the Velocity Verlet algorithm, the volume in phase space is preserved up to a small error, which is why the algorithm is used in practice [2].
+			If the dynamics is discretised with Verlet's method, the volume in phase space is preserved up to a small error [2], which is why we use the Metropolis-Hastings acceptance rule.
 	\section{Exploring a 2D example}
 		\subsection{Context}
-		In this section we explore the performance of the presented algorithms on a 2D toy example\footnote{We call it a toy example because in principle one could sample from this distribution by simply writing it in polar coordinates and using the $F^{-1}$ method.}. The target distribution is taken as $f_1(q_1,q_2)=e^{-\alpha(q_1^2+q_2^2-0.25)^2}$, with $\alpha>0$ a parameter. The target distribution therefore is shaped as a doughnot and $\alpha$ controls its thickness. 
+		In this section we explore the performance of the considered algorithms on a 2D toy example\footnote{We call it a toy example because in principle one could sample from this distribution by simply writing it in polar coordinates and using the $F^{-1}$ method.}. The target distribution is taken as $f_1(q_1,q_2)=e^{-\alpha(q_1^2+q_2^2-0.25)^2}$, with $\alpha>0$ a parameter. 
+		This target has polar symmetry, and has global maxima at a radius of $\sqrt{0.25}=0.5$ away from the origin. It also admits a local minima at the origin. One can therefore picture it as some sort of centered disk with $\alpha$ controlling its thickness. 
 		
 		To make the study concise, we limit our analysis to two values of the parameter $\alpha$. To make comparisons interesting between these two values, we take these as being $\alpha =10$ and $\alpha=1000$. Indeed we expect the $\alpha=1000$ case to be more difficult to sample from than the $\alpha=10$ case, due to the extent of localisation.
 
@@ -100,7 +99,7 @@
 
 		Note that in the following, unless specified otherwise, a burn-in period of 100 is used. 
 		\subsection{RWMC Solution}
-			As seen previously, the RWMC algorithm only depends on the step size. We can therefore easily find the best RWMC sampler version by exploring the impact of the step size on the performance. 
+			As seen previously, the RWMC algorithm only depends on the step size. We can therefore easily find the best RWMC sampler version by exploring the impact of the step size on performance. 
 
 			The similarities associated to 3000 samples for the different step sizes are presented in \ref{fig:rwmc-scan}. The results are averaged over 15 and 100 chains for $\alpha=10$ and $\alpha=1000$ respectively. 
 			\begin{figure}[htb]
@@ -110,8 +109,8 @@
 					\caption{Similarity as a function of RWMC step size for considered values of $\alpha$.}
 					\label{fig:rwmc-scan}
 			\end{figure}
-			Looking at the plots, it is clear they display a local maxima around 8.5$\times 10^{-2}$ and 6.5$\times 10^{-2}$ for $\alpha=10$ and $\alpha=1000$ respectively. Such a feature is expected as the step size is a tuning parameter that should be chosen to match the scale of the target distribution.
-			More precisely, the peak is sharper on its right for the $\alpha=1000$ case, which is consistent with the fact that the density is more localised. 
+			Looking at the plots, it is clear they display a local maxima around 8.5$\times 10^{-2}$ and 7$\times 10^{-2}$ for $\alpha=10$ and $\alpha=1000$ respectively. Such a feature is expected as the step size is a tuning parameter that should be chosen to match the scale of the target distribution.
+			More precisely, the peak is sharper on its right for the $\alpha=1000$ case, which is consistent with the fact that the density is more localised (and therefore large steps are more heavily penalised). 
 			
 			The value of the similarity is in all cases $<0.5$, which means that 3000 samples are too few to accurately estimate the target distribution. The value is higher in the $\alpha=1000$ case, which can at first look surprising. Indeed, this case is meant to be harder than the $\alpha=10$ one. However, since the density is more localised for $\alpha=1000$, there are fewer places where the estimate and the target can differ, which leads to a better similarity. It is therefore important to consider relative values of similarities for the different step sizes, rather than  absolute ones.
 
@@ -125,17 +124,17 @@
 					\label{fig:U-pot-alpha=10}
 			\end{wrapfigure}
 			Before exploring the impact of the different parameters of the HMC algorithm, we first present the potential energy landscape associated to the algorithm for this specific problem. The landscape is presented in figure \ref{fig:U-pot-alpha=10}. 
-			This landscape has polar symmetry, and has global minima at a radius of $\sqrt{0.25}=0.5$ away from the centre and a local maxima at the origin. 
 
 			The only difference in the landscape for $\alpha=1000$ w.r.t. $\alpha=10$ is the scale of the potential. This means that the $\alpha=1000$ will give rise to stronger potential forces, which translates the fact that the density is more localised. 
 
+			This landscape gives us a good idea of how trajectories will look like. We just need to immagine trowing a bead into it with given initial momentum, and letting it slide down and up the ``hills''. 
+
 			The first parameter we explore is the mass. We split this in terms of the mass scale and the mass anisotropy. We do not consider the impact of off-diagonal terms as this would make the report too long and was not suggested in the statement.
-			\subsection{Impact of Mass Scale}
-			The impact of mass scale is readily understood by thinking back at the formulas defining the algorithm.		
-			
+			\subsubsection{Impact of Mass Scale}
+			The impact of mass scale is readily understood by thinking back at the formulas defining the algorithm.			
 			Firstly, we can interpret what it means for $p$ to scale with $m$. Given that the potential does not depend on $m$, the $\Delta p$ applied at each integration step are independent of $m$. This implies that it will take longer for the particle to react to the potential landscape. Physically, this is what we call the particle's inertia.
 
-			More surprisingly, we can see that altough the mass appears explicitely in the expression for cinetical energy $K=pM^{-1}p$, due to $p\sim\mathcal{N}(0,M)$, we have $K\sim\mathcal{N}(0,I)$. From this we deduce that mass does not affect the hights reached in the potential well (if we integrate sufficiently long). 
+			More surprisingly, we can see that altough the mass appears explicitely in the expression for kinetical energy due to $p\sim\mathcal{N}(0,M)$, we have $K(p)=\frac{1}{2}\sum_{i=1}^d \left(\frac{p_i}{\sqrt{m_i}}\right)^2= 2\chi^2_d$. From this we deduce (using energy conservation) that mass does not affect the hights reached in the potential well (if we integrate sufficiently long). This makes sense in probability terms, since we want accessible domains to be the same no matter the value of $m$ 
 			It does however affect the size of the steps that are taken given that $M^{-1}p\sim\mathcal{N}(0,M^{-1})$, i.e. it scales (up or down) the initial velocity. 
 
 			Given we can correct for such changes by adapting the integration time and step, it is more interesting to move to analysing how the algorith is affected by anisotropy of the mass, which is the goal of the next section. 
@@ -148,11 +147,11 @@
 			%		\label{fig:mass-scan}
 			%\end{figure}
 			%In this case, both plots look qualitatively similar : the similarity admits a global maxima at some value of the mass scale, and worsen on both sides of it. The acceptance rate on the other hand stays really close to $1$, probably due to the $\Delta t$ being quite generosly choosen. The decrease in performance is therefore due to the fact that the particle explores less well the space. We can easily make sense of it for higher values of the mass, as the particle will be more inert and therefore less likely to explore the space. For lower values of the mass, the particle will be more reactive to forces, so the decrease in exploration can seem counter-intuitive. We could however immagine that if the mass is too low, the particle will be more likely to oscillate around the minima, and so not explore well other parts of the domain.
-			\subsection{Impact of Mass Isotropy}
-			The mass isotropy/anisotropy specifies relative velocities and inertias among the directions. Anisotropic mass therefore allows a particle to move quicker and react more quickly to forces in some directions, while doing so slower in others. We expect this to be useful to improve exploration for example when the potential does not have radial symmetry around a minimum for example (but is instead elliptic). 
+			\subsubsection{Impact of Mass Anisotropy}
+			The mass isotropy/anisotropy specifies relative velocities and inertias among the directions. Anisotropic mass therefore allows a particle to move quicker and react more quickly to forces in some directions, while doing so slower in others. We expect this to be useful to improve exploration for example when the potential does not have radial symmetry around a minimum for example (immagine the case of an ellipse). 
 
 			In our case, the target distribution is radially symmetric around the origin, but not around its minima. We could therefore expect that better results could be obtained by playing with anysotropic masses. One should however take into account that the preculiar shape of our distribution makes it hard to be confident in this statement.
-			Indeed, due to the donought shape of the potential, much of the momentum is actually efficiently converted between directions. 
+			Indeed, due to the specific shape of the potential, much of the momentum is actually efficiently converted between directions. 
 
 			We tried gaining insight with help of \ref{fig:mass-sym} and similar figures, in which the similarities associated to 2000 samples for both isotropic and anisotropic masses are represented. Note we limited this analysis to the $\alpha=1000$ case since the simplicity of the $\alpha=10$ makes it harder to interpret subtle differences in performance. Here we took $t=0.21,dt=0.01$, and averaged over 10 chains.  
 			\begin{figure}[htb]
@@ -163,7 +162,7 @@
 					\label{fig:mass-sym}
 			\end{figure}
 			Looking at the plot, we see that the similarity is not impacted by the anysotropy. One can wonder if the result would change by making the anisotropy more severe. In this case however, it would be hard to disentangle the contributions since for really different masses, $t$ and $\Delta t$ would be of different quality.  
-			\subsection{Impact of Integration Time}
+			\subsubsection{Impact of Integration Time}
 			The next parameter we explore is integration time. For this parameter, we expect the optimal value to be the one that allows the sampler to explore the whole space, without being excessively long (as it would slow down sampling).
 			The similarities associated to 3000 samples for the different integration times are presented in figure \ref{fig:t-scan}. Here we took $dt=0.01$, and averaged over 10 chains.  
 			\begin{figure}[htb]
@@ -174,8 +173,8 @@
 					\label{fig:t-scan}
 			\end{figure}
 			%This was indeed the observed behaviour, though the plots are not reported due to space constraints, and there being little to comment on. 
-			In both $\alpha=10$ and $\alpha=1000$ cases similarity increases as a function of $t$ untill a plateau around $t=9\times 10^{-2}$ is reached. This independence (or weak dependence) on $\alpha$ can be surprising at first given that the caracteristic time of radial oscillation clearly depends on $\alpha$. In both $\alpha$ cases however, the bottle neck for two sample to be distant is not moving in the radial direction, but rather, in the one ortogonal to it (given that both times the radius of the disk is larger than its width).   
-			\subsection{Impact of $\Delta t$}
+			In both $\alpha=10$ and $\alpha=1000$ cases similarity increases as a function of $t$ untill a plateau around $t=9\times 10^{-2}$ is reached. This weak dependence on $\alpha$ can be surprising at first given that the caracteristic time of radial oscillation clearly depends on $\alpha$ (throught the curvature of the potential). In both $\alpha$ cases however, we can imagine the bottle neck for two samples to be distant is actually in the direction ortogonal to the radial one. Indeed, in both cases the radius of the disk is larger than its width.   
+			\subsubsection{Impact of $\Delta t$}
 			We now turn to analysing the impact of the time step. This parameter is important as it controls the accuracy of the integration. The goal is to find the largest time step that allows for accurate integration, as this will speed up the sampler while allowing it to accept proposals frequently.
 
 			The similarities associated to 3000 samples for the different time steps are presented in figure \ref{fig:dt-scan}. Here we took $t=0.12$, and averaged over 10 and 5 chains for $\alpha=10$ and $\alpha=1000$ respectively. 
@@ -183,36 +182,38 @@
 				\centering
 					\vspace{0em}
 					\includegraphics[width=0.95\textwidth]{dt_scan}
-					\caption{Similarity as a function of HMC time step for considered values of $\alpha$ with $t=0.21$.}
+					\caption{Similarity as a function of HMC time step for considered values of $\alpha$ with $t=0.12$.}
 					\label{fig:dt-scan}
 			\end{figure}
-			The first characteristic feature the two plots share is the monotonous behaviour of the acceptance rate. Indeed, as mentionned before, by making $\Delta t$ grow, the simulation does not exactly leave the Hamiltonian invariant, and therefore makes the acceptance rate decrease. This in turn can affect the similarity, as fewer samples are obtained and therefore these represent the target distribution less precisely. This happens particularly noticepbly in the $\alpha=1000$ case, where we reach a really low acceptance rate at $\Delta t=6\times 10^{-2}$. This can be interpreted as due to the characteristic time being shorter than in the $\alpha=10$, and therefore requiring finer resolution. Indeed, for $\alpha=10$ good acceptance rate is mantained in term of accpetance rate and target similarity even when a single timestep of size $t$ is taken. This makes sense since the obtained algorithm is still some sort of upgraded version of RWMC where the general direction of the step is choosen smartly and RWMC already performed well over quite a broad domain of step sizes.   
-			\subsection{Comment on interractions between parameters}
+			The first characteristic feature the two plots share is the monotonous behaviour of the acceptance rate. Indeed, as mentionned before, by making $\Delta t$ grow, the simulation does not exactly leave the Hamiltonian invariant, and therefore makes the acceptance rate decrease. This in turn can affect the similarity, as fewer samples are obtained and therefore these represent the target distribution less precisely. This happens particularly noticepbly in the $\alpha=1000$ case, where we reach a really low acceptance rate at $\Delta t=6\times 10^{-2}$. This is probably due to the radial characteristic time being shorter than in the $\alpha=10$, and therefore requiring finer resolution. Indeed, for $\alpha=10$ good acceptance rate is mantained in term of accpetance rate and target similarity even when a single timestep of size $t$ is taken. This makes sense since the obtained algorithm is still some sort of upgraded version of RWMC where the general direction of the step is choosen smartly and RWMC already performed well over quite a broad domain of step sizes.   
+			\subsubsection{Comment on interractions between parameters}
 			In the previous sections, the analysis of HMC's parameters was limited to a one-factor-at-a-time study. This was motivated by the non-exhaustive character of the report and the fact that meaningfull insights were associated to these longitudinal analyses. 
 			
-			In reality however, each parameter of course does not act in a vacume. For example, increasing mass, requires longer integration times for good space-exploration to occur, and allows for larger $\Delta t$ to be used. This has practical implications in finding global optimal choice of parameters. Indeed, when grid search for the parameters is untractable (i.e. in high dimensions), these interractions between the parameters make it hard to find globally optimal values. Our intuition is that in these cases one can proceed in the following way to find ``good enough'' parameters ``easily'' : 
+			In reality however, each parameter of course does not act in a vacum. For example, increasing mass, requires longer integration times for good space-exploration to occur, and allows for larger $\Delta t$ to be used. This has practical implications in finding global optimal choice of parameters. Indeed, when grid search for the parameters is untractable (i.e. in high dimensions), these interractions between the parameters make it hard to find globally optimal values. Our intuition is that in these cases one can proceed in the following way to find ``good enough'' parameters ``easily'' : 
 			\begin{enumerate}
 				\item estimate characteristic times for the oscillations from the expression for the potential (analytically or  numerically if not tractable),
-				\item use assumptions on the potential to fix the structure for the mass (isotropic vs anisotropic) and select the locally optimal mass after having set $t$ and $\Delta t$ generously : $t$ larger than optimal (guaranteeing good mixing) and $\Delta t$ smaller than optimal (granting precise integration),
+				\item use assumptions on the potential to fix the structure for the mass (isotropic vs anisotropic) and select the locally optimal mass structure after having set $t$ and $\Delta t$ generously : $t$ larger than optimal (guaranteeing good mixing) and $\Delta t$ smaller than optimal (granting precise integration),
 				\item with the new mass matrix, select the locally optimal integration time (shortest one preserving good enough mixing),
 				\item finally select the locally optimal $\Delta t$ (the biggest for which the acceptance rate is good enough).
 			\end{enumerate}
 			We do not expect this approximate tuning of the parameters to be a problem given that alternatives like RWMC breakdown in high dimensions. A locally optimal selection of HMC parameters will probably still lead to a much more efficient sampler.
 
-			Following the procedure described above, the locally optimal  HMC parameters for the $\alpha=10$ case were found to be $m_1=m_2=1$, $t=dt=0.09$, and for the $\alpha=1000$ case $m_1=m_2=1$, $t=0.09$, $dt=0.03$. Refering to \ref{fig:rwmc-scan}, the optimal step size for the RWMC algorithm is around $0.085$ when $\alpha=10$ and $0.075$ when $\alpha=1000$. In the next section, these parameters will be used to compare the performance of the optimised HMC and RWMC algorithms.
+			Following the procedure described above, the locally optimal  HMC parameters for the $\alpha=10$ case were found to be $m_1=m_2=1$, $t=dt=0.09$, and for the $\alpha=1000$ case $m_1=m_2=1$, $t=0.09$, $dt=0.03$. Refering to \ref{fig:rwmc-scan}, the optimal step size for the RWMC algorithm is around $8.5\times 10^{-2}$ when $\alpha=10$ and $7.5\times 10^{-2}$ when $\alpha=1000$. In the next section, these parameters will be used to compare the performance of the optimised HMC and RWMC algorithms.
 		\subsection{RWMC and HMC Comparison}
 		\subsubsection{Target Similarity}\label{sec:target-similarity}
-		To determine which algorithm is best to use for the studied 2D example, it is interesting to compare the results obtained with optimised versions of the RWMC and HMC algorithms as a function of sample size (matching the number of function evaluations). We do this in \ref{fig:nsamples-evolution}. The results are averaged over 5 chains.
+		To determine which algorithm is best to use for the studied 2D example, it is interesting to compare the results obtained with optimised versions of the RWMC and HMC algorithms as a function of the number of function evaluations. We do this in \ref{fig:nsamples-evolution}. The results are averaged over 5 chains.
 		%Note that the optimal HMC parameters for the $\alpha=10$ case were not found following the algorithm described above. Indeed in this special case, the problem is so simple that taking a single timestep of size $t$ is enough to get a good similarity. The improvement obtained by taking more timesteps is therefore irrelevant when compared to the computation burden.
 		\begin{figure}[htb]
 			\centering
 				\vspace{0em}
 				\includegraphics[width=0.9\textwidth]{nsamples_evolution}
-				\caption{Similarity as a function of the number of function evaluations for RWMC and HMC samplers and considered values of $\alpha$. $\delta=0.085,m_1=m_2=1,t=dt=0.09$ were used for $\alpha=10$ while $\delta=0.075,m_1=m_2=1,t=0.09,\Delta t=0.02$ were used for the $\alpha=1000$ one.}
+				\caption{Similarity as a function of the number of function evaluations for RWMC and HMC samplers and considered values of $\alpha$. $\delta=8.5\times 10^{-2},m_1=m_2=1,t=dt=0.09$ were used for $\alpha=10$ while $\delta=7.5\times 10^{-2},m_1=m_2=1,t=0.09,\Delta t=0.02$ were used for the $\alpha=1000$ one.}
 				\label{fig:nsamples-evolution}
 		\end{figure}
-		In general, the same qualitative behaviour is observed for all algorithms : the similarity quickly increases at the start but then sees deminishing returns characteristic of concave functions. In both cases RWMC outperforms HMC in terms of similarity. 
-		The difference is slightly larger in the $\alpha=10$ case, again, due to how simple the target function is. For $\alpha=1000$, the computational overhead (of a factor 7) is for a big part compensated. We can easily imagine this trend continuing as a function of distribution complexity. We also expect it to accentuate when the dimension of the distribution is increased, due to the curse of dimensionality. 
+		In general, the same qualitative behaviour is observed for all algorithms : the similarity quickly increases at the start but then sees deminishing returns characteristic of concave functions. This is a characteristic inherited from Monte Carlo methods. 
+
+		In both cases RWMC outperforms HMC in terms of similarity. 
+		The difference is larger in the $\alpha=10$ case, again, due to how simple the target function is. For $\alpha=1000$, the computational overhead (of a factor 7) is for a big part compensated. We can easily imagine this trend continuing as a function of distribution complexity. We also expect it to accentuate when the dimension of the distribution is increased, due to the curse of dimensionality. 
 		\subsubsection{Effective Sample-Size}
 		\begin{figure}[htb]
 			\begin{subfigure}[b]{\textwidth}
@@ -230,7 +231,7 @@
 			\caption{Autocorrelation plots and effective sample-size for RWMC and HMC samplers and considered values of $\alpha$. Both $q_1$ and $q_2$ are shown on each plot, and the results are averaged over 5 chains.}
 			\label{fig:acf-ess}
 		\end{figure}
-		The main motivation behind HMC is to decrease the autocorrelation of the samples by making step proposals that are more distant, whilst keeping a high probability of acceptance. Indeed, as shown in Sec., the theoretical acceptance rate of HMC (i.e. without time discretization) stays equal to 1, no matter how large the integration time is. This effect is expected to become important when the target distribution is difficult to sample from, and a random walk is unable to explore the space efficiently.
+		The main motivation behind HMC is to decrease the autocorrelation of the samples by making step proposals that are more distant, whilst keeping a high probability of acceptance. Indeed, as shown in \ref{sec:acceptance-rate}, the theoretical acceptance rate of HMC (i.e. without time discretization) stays equal to 1, no matter how large the integration time is. This effect is expected to become important when the target distribution is difficult to sample from, and a random walk is unable to explore the space efficiently.
 		This can be observed in the autocorrelation plots of \ref{fig:acf-ess}a. In both cases $\alpha=10$ and $\alpha=1000$, the autocorrelation of the HMC samples decreses faster than that of the RWMC samples. As expected, the effect is subtle for $\alpha=10$, as the RWMC samples are already quite decorrelated, and more pronounced for $\alpha=1000$.
 
 		On the other hand, HMC requires more evaluations of the target function to generate a sample, as it needs to compute the gradient of the potential energy twice at each step of Verlet's method, in addition to the evaluation of the proposal step. This computation time could be used to generate more samples with RWMC, which would increase the effective sample size (number of independent samples that would give the same variance as the autocorrelated samples) and therefore the similarity of the samples to the target distribution.
@@ -305,7 +306,7 @@
 	\section{Conclusion}
 	In this report we provided insight on how to choose between RWMC and HMC based on problem characteristics. 
 	
-	We first presented an overview of the theoretical foundations of both methods, and proved important properties of HMC.	
+	We first presented an overview of the theoretical foundations of HMC, and proved important properties for it.	
 	Then, we explored and interpreted how parameters, such as step size for RWMC and mass for HMC influence performance. To systematically assess and compare their efficiency, we used among others a similarity metric and effective sample size. 
 	Specifically, we considered two case studies: a 2D toy example with tunable complexity and a higher-dimensional 10D birthweight dataset. 
 	
